@@ -1,0 +1,5 @@
+__author__ = 'longwosion'
+__author_email__ = 'longwosion@gmail.com'
+__url__ = 'https://github.com/longwosion/uliweb-peafowl'
+__license__ = 'MIT'
+version = __version__ = '0.1'

@@ -1,0 +1,9 @@
+
+<script>
+PNotify.prototype.options.styling = "fontawesome";
+$(function(){
+    {{for _c, _m in get_flashed_messages():}}
+        show_message("{{<<_m}}", '{{=_c}}');
+    {{pass}}
+});
+</script>

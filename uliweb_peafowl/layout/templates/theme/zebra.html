@@ -1,0 +1,39 @@
+{{extend "theme/skeleton.html"}}
+
+{{block title}}{{=settings.LAYOUT.TITLE}}{{end}}
+
+{{block content}}
+
+    {{block iconcss}}
+        {{use "fontawesome"}}
+        {{use "ionicons"}}
+    {{end iconcss}}
+
+    {{block custom_css}}
+    {{end}}
+
+
+<div id="content-container">
+
+    {{block before_topbar}}{{end}}
+    {{block topbar}}{{end}}
+    {{block after_topbar}}{{end}}
+    
+    {{block before_navbar}}{{end}}
+    {{block navbar}}{{end}}
+    {{block after_navbar}}{{end}}
+    
+    {{block before_container}}{{end}}
+    {{block container}}{{end}}
+    {{block after_container}}{{end}}
+    
+    {{block before_footer}}{{end}}
+    {{block footer}}{{end}}
+    {{block after_footer}}{{end}}
+
+</div>
+    {{block flash}}
+        {{include "theme/include/default/inc_show_flashes.html"}}
+    {{end}}
+
+{{end content}}   
