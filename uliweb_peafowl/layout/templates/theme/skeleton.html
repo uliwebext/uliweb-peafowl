@@ -18,9 +18,13 @@
 
     {{block pagecss}}
     {{end}}
+    
 
-    <script type="text/javascript" data-main="/static/js/config" 
-        src="/static/js/lib/require.js"></script>
+
+    <script type="text/javascript"
+        src="/static/js/vendor/require-min-{{=settings.UI_CONFIG.requirejs_version}}.js"></script>
+    <script type="text/javascript"
+        src="/static/js/config.js"></script>
 
 </head>
 
