@@ -2,31 +2,43 @@ requirejs.config({
     "baseUrl": "/static/js/vendor",
     "paths": {
         "app"      : '../modules',
-        "jquery"   : '/static/jquery/jquery-1.11.1.min.js',
+        "jquery"   : '/static/jquery/jquery-1.11.1.min',
         "text"     : 'require/text',
         "css"      : 'require/css', 
         "markdown" : 'Markdown.Converter',
 
-        "mmGrid"     : 'mmgrid/mmGrid',
-        "mmTreeGrid" : 'mmgrid/mmTreeGrid'
+        //--------------------------------------
+        "mmGrid"         : 'mmgrid/mmGrid',
+        "mmPaginator"    : 'mmgrid/mmPaginator',
+        "mmTreeGrid"     : 'mmgrid/mmTreeGrid',
+        "select2"        : 'select2/select2',
+        "dialog2"        : 'jquery.dialog2/jquery.dialog2',
+        "dialog2-helper" : "jquery.dialog2/jquery.dialog2.helpers"
     },
     "shim": {
         "mmGrid": {
-            deps: [
-                'mmgrid/mmPaginator',
-                'mmgrid/scrolling',
-
-                'css!mmgrid/mmGrid',
-                'css!mmgrid/mmPaginator'
-            ],
-            exports: 'jQuery.fn.mmGrid'
-        },
+            deps: ['mmgrid/scrolling','css!mmgrid/mmGrid'],
+            exports: 'jQuery.fn.mmGrid'},
+        "mmPaginator": {
+            deps: ['css!mmgrid/mmPaginator'],
+            exports: 'jQuery.fn.mmPaginator'},
         "mmTreeGrid": {
+            deps: ["mmGrid", "css!mmgrid/mmTreeGrid"],
+            exports: 'jQuery.fn.mmGrid'},
+        "select2": {
+            deps: ["css!select2"],
+            exports: 'jQuery.fn.select2'
+        },
+        "dialog2": {
             deps: [
-                "mmgrid/mmGrid", 
-                "css!mmgrid/mmTreeGrid"
+                "jquery.dialog2/jquery.controls",
+                "css!jquery.dialog2/jquery.dialog2"
             ],
-            exports: 'jQuery.fn.mmGrid'
+            exports: 'jQuery.fn.dialog2'
+        },
+        "dialog2-helper": {
+            deps: ["dialog2"],
+            exports: 'jQuery.fn.dialog2.helpers'
         }
     },
     urlArgs: "bust=" +  (new Date()).getTime()

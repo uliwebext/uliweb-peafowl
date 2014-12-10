@@ -1,6 +1,6 @@
 console.log("main")
 
-require(["mmGrid"], function(mmgrid){
-    console.log("mmgrid:")
-    console.log(mmgrid)
+require(["select2"], function(select2){
+    console.log("select2:")
+    console.log(select2)
 })
