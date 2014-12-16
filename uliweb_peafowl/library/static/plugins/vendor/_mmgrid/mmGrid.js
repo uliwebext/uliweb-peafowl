@@ -133,7 +133,7 @@
             if(opts.checkCol){
                 var chkHtml = opts.multiSelect ?  '<input type="checkbox" class="checkAll" >'
                     : '<input type="checkbox" disabled="disabled" class="checkAll">';
-                opts.cols[0].unshift({title:chkHtml,width: 20, rowspan: this.$titleDeep, align: 'center' ,lockWidth: true, checkCol: true, renderer:function(){
+                opts.cols[0].unshift({title:chkHtml,width: 24, rowspan: this.$titleDeep, align: 'center' ,lockWidth: true, checkCol: true, renderer:function(){
                     return '<input type="checkbox" class="mmg-check">';
                 }});
             }

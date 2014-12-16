@@ -14,9 +14,9 @@
     {{use 'bootstrap3'}}
 
     <script type="text/javascript"
-        src="/static/js/vendor/require-{{=settings.UI_CONFIG.requirejs_version}}.js"></script>
+        src="{{=url_for_static('plugins/vendor/require-%s.js' % settings.UI_CONFIG.requirejs_version)}}"></script>
     <script type="text/javascript"
-        src="/static/js/config.js"></script>
+        src="{{=url_for_static('plugins/config.js')}}"></script>
 
     {{block pagecss}}
     {{end}}

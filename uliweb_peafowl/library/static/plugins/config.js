@@ -1,8 +1,7 @@
 requirejs.config({
-    "baseUrl": "/static/js/vendor",
+    "baseUrl": "/static/plugins/vendor",
     "paths": {
         "app"      : '../modules',
-        "jquery"   : '/static/jquery/jquery-1.11.1.min',
         "text"     : 'require/text',
         "css"      : 'require/css', 
         "markdown" : 'Markdown.Converter',
