@@ -1,0 +1,41 @@
+{{extend "theme/basic.html"}}
+
+{{block title}}{{=settings.LAYOUT.TITLE}}{{end}}
+
+{{block pagecss}}
+    {{block iconcss}}
+        {{use "fontawesome"}}
+        {{use "ionicons"}}
+    {{end iconcss}}
+
+    {{block custom_css}}
+    {{end}}
+{{end}}
+
+{{block content}}
+
+{{block before_topbar}}{{end}}
+{{block topbar}}
+    {{include "theme/include/sidebar/inc_topbar.html"}}
+{{end}}
+{{block after_topbar}}{{end}}
+
+
+<div class="wrapper row-offcanvas row-offcanvas-left">
+    {{block before_sidebar}}{{end}}
+    {{block sidebar}}
+        {{include "theme/include/sidebar/inc_sidebar.html"}}
+    {{end}}
+    {{block after_side}}{{end}}
+
+    {{block before_container}}{{end}}
+    {{block container}}
+        {{include "theme/include/sidebar/inc_container.html"}}
+    {{end}}
+    {{block after_container}}{{end}}
+</div>
+
+{{block initpage_script}}
+{{end}}
+
+{{end content}}   

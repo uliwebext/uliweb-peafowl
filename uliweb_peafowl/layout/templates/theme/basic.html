@@ -4,34 +4,34 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta http-equiv="X-UA-Compatible" content="IE=9">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     <title>{{block title}}{{end}}</title>
-
 
     {{block meta}}
     {{end}}
 
+    {{use "jquery", ui=True}}
     {{use 'bootstrap3'}}
-    <!-- toplinks -->
-
-    <!-- bottomlinks -->
-
-    {{block pagecss}}
-    {{end}}
-    
-
 
     <script type="text/javascript"
         src="/static/js/vendor/require-{{=settings.UI_CONFIG.requirejs_version}}.js"></script>
     <script type="text/javascript"
         src="/static/js/config.js"></script>
 
+    {{block pagecss}}
+    {{end}}
+
+    {{link "css/adminLTE.css"}}
+    {{link "css/peafowl.css"}}
+
 </head>
 
-<body id="peafowl-body" class="{{block body_class}}{{end}}">
+<body id="peafowl-body" class="{{block body_class}}skin-blue{{end}}">
     
 {{block content}}    
 {{end content}}
 
+
+<script type="text/javascript" src="/static/js/modules/adminLTE.js"></script>
 </body>
 </html>

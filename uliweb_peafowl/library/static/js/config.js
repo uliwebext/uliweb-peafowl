@@ -8,36 +8,38 @@ requirejs.config({
         "markdown" : 'Markdown.Converter',
 
         //--------------------------------------
-        "mmGrid"         : 'mmgrid/mmGrid',
-        "mmPaginator"    : 'mmgrid/mmPaginator',
-        "mmTreeGrid"     : 'mmgrid/mmTreeGrid',
-        "select2"        : 'select2/select2',
-        "dialog2"        : 'jquery.dialog2/jquery.dialog2',
-        "dialog2-helper" : "jquery.dialog2/jquery.dialog2.helpers"
+        "scrolling"        : '_mmgrid/scrolling',
+        "mmgrid"           : '_mmgrid/mmGrid',
+        "mmpaginator"      : '_mmgrid/mmPaginator',
+        "mmtreegrid"       : '_mmgrid/mmTreeGrid',
+        "select2"          : '_select2/select2',
+        "jqdialog2"        : 'jquery.dialog2/jquery.dialog2',
+        "jqdialog2-helper" : "jquery.dialog2/jquery.dialog2.helpers",
+        "adminLTE"         : "app/adminLTE"
     },
     "shim": {
-        "mmGrid": {
-            deps: ['mmgrid/scrolling','css!mmgrid/mmGrid'],
+        "mmgrid": {
+            deps: ['css!_mmgrid/mmGrid'],
             exports: 'jQuery.fn.mmGrid'},
-        "mmPaginator": {
-            deps: ['css!mmgrid/mmPaginator'],
+        "mmpaginator": {
+            deps: ['scrolling', 'css!_mmgrid/mmPaginator'],
             exports: 'jQuery.fn.mmPaginator'},
-        "mmTreeGrid": {
-            deps: ["mmGrid", "css!mmgrid/mmTreeGrid"],
+        "mmtreegrid": {
+            deps: ["mmgrid", "css!_mmgrid/mmTreeGrid"],
             exports: 'jQuery.fn.mmGrid'},
         "select2": {
-            deps: ["css!select2"],
+            deps: ["css!_select2/select2"],
             exports: 'jQuery.fn.select2'
         },
-        "dialog2": {
+        "jqdialog2": {
             deps: [
                 "jquery.dialog2/jquery.controls",
                 "css!jquery.dialog2/jquery.dialog2"
             ],
             exports: 'jQuery.fn.dialog2'
         },
-        "dialog2-helper": {
-            deps: ["dialog2"],
+        "jqdialog2-helper": {
+            deps: ["jqdialog2"],
             exports: 'jQuery.fn.dialog2.helpers'
         }
     },

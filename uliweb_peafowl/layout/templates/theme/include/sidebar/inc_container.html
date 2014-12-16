@@ -1,0 +1,25 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<aside class="right-side">                
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        {{block sidebar_page_title_row}}
+        <h1>
+            {{block sidebar_page_title}}{{end}}
+            <small>{{block sidebar_page_subtitle}}{{end}}</small>
+        </h1>
+        {{end}}
+
+        {{block sidebar_breadcrumb}}
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li class="active">Blank page</li>
+        </ol>
+        {{end}}
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+    {{block main_content}}
+    {{end}}
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->

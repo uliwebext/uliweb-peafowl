@@ -1,0 +1,141 @@
+{{extend "admin_layout.html"}}
+
+{{block sidemenu}}
+    {{<< functions.menu('ADMIN', 'admin_models', _class='sidebar-menu')}}
+{{end}}
+
+{{block sidebar_page_title}}
+    {{=_('Models')}}
+{{end}}
+
+{{block sidebar_page_subtitle}}
+    {{=_('add, edit and remove model\'s data')}}
+{{end}}
+
+{{block custom_css}}
+{{end}}
+
+{{block sidebar_breadcrumb}}
+<ol class="breadcrumb">
+    <li><a href="/"><i class="fa fa-dashboard"></i>{{=_('Home')}}</a></li>
+    <li><a href="/admin">{{=_('Admin')}}</a></li>
+    {{if model:}}
+        <li><a href="/admin/models">{{=_('Models')}}</a></li>
+        <li class="active"><a href="/admin/models/{{=model}}">[{{=model}}]</a></li>
+    {{else:}}
+        <li class="active">{{=_('Models')}}</li>
+    {{pass}}
+
+</ol>
+{{end}}
+
+{{block main_content}}
+<div id="admin-models" class="row">
+    <div class="col-md-3 col-sm-4">
+        <div class="box box-warning">
+            <div class="box-body">
+                <ul class="nav nav-pills nav-stacked" id="model-list">
+                    {{for m in models:}}
+                        <li class="{{if m==model:}} active {{pass}}">
+                            <a href="/admin/models/{{=m}}" data-value="{{=m}}"><i class="fa fa-table"></i> {{=m}}</a>
+                        </li>
+                    {{pass}}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9 col-sm-8">
+        <div class="space">
+        {{if model:}}
+            <a class="btn btn-primary btn-sm" id="btnAdd" href="/admin/models/{{=model}}/add">
+                <i class="fa fa-plus"></i> {{=_('Add')}}
+            </a>
+            <button class="btn btn-success btn-sm" id="btnEdit">
+                <i class="fa fa-edit"></i> {{=_('Edit')}}
+            </button>
+            <button class="btn btn-danger btn-sm" id="btnDelete">
+                <i class="fa fa-remove"></i> {{=_('Delete')}}
+            </button>
+        {{pass}}
+        </div>
+        {{if table:}}
+            {{table_id = 'model_table'}}
+            <div>
+                <table id="{{=table_id}}"></table>
+                <div id="pg" style="text-align: right;"></div>
+            </div>
+        {{pass}}
+    </div>
+</div>
+
+{{if table:}}
+
+    <script>
+        require(["mmgrid", "mmpaginator", "mmtreegrid", "jqutils"], function(mmgrid){
+            var query_string = $.query_string.set('data', '').toString();
+
+            var settings = {
+                multiSelect: true,
+                nowrap: true,
+                indexCol: true,
+                method:'get',
+                nameField:'field',
+                root: 'rows',
+                width:'auto',
+                height:'auto',
+                checkCol:true,
+                url:"{{=request.path}}" + query_string,
+                remoteSort:true,
+                cols:{{if defined('view'):}}
+                    {{=json_dumps(view.get_columns(False))}}
+                {{else:}}
+                    {{=json_dumps(table.get_columns(False))}}
+                {{pass}},
+                idField:'id',
+                filename: 'download.xls',
+                filename_alt: 'download.xls'
+            }
+
+            var pageopts = {
+                totalCountName: 'total',
+                limitParamName: 'limit'
+            }
+            
+            var pg = $('<div class="mm-pagination" style="text-align: left;"></div>');
+            $('#{{=table_id}}').after(pg);
+            settings.plugins = [pg.mmPaginator(pageopts)];
+            
+            var mmg = $('#{{=table_id}}').mmGrid(settings);
+        
+            $("#btnEdit").on('click', function(){
+                var index = mmg.mmGrid('selectedItem');
+                if (index.length > 0) {
+                    var data = mmg.mmGrid('row', index);
+                    window.location.href = '/admin/models/{{=model}}/edit?id='+data.id;
+                } else {
+                    alert('Please choose one record first!');
+                }
+            });
+
+            $("#btnDelete").on('click', function(){
+                var ids = [];
+                var items = mmg.mmGrid('selectedItems');
+                if (items.length > 0){
+                    for(var i=0; i<items.length; i++)
+                        ids.push(items[i].id);
+                    $.post('/admin/models/{{=model}}/delete', {ids:ids}).success(function(data){
+                        if (data.success){
+                            show_message(data.message);
+                            mmg.mmGrid('load');
+                        }
+                    });
+                } else {
+                    alert('Please choose at least one record first!');    
+                } 
+            });
+        });
+    </script>
+
+{{pass}}
+
+{{end}}

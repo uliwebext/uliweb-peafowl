@@ -1,0 +1,34 @@
+{{extend "theme/basic.html"}}
+
+{{block body_class}}bg-black{{end}}
+
+{{block content}}
+
+<div class="form-box" id="login-box">
+    <div class="header">{{=_('Admin Panel')}}</div>
+    <form action="" method="post">
+        <div class="body bg-gray">
+            <div class="form-group {{if form.errors.get('username'):}}has-error{{pass}}">
+                <input id="field_username" name="username" type="text" value="{{=form.username.data}}" class="form-control" placeholder="{{=form.username.field.label}}">
+                <p class="help help-block">
+                    {{if form.errors.get('username'):}}{{=form.errors['username']}}{{pass}}
+                </p>
+            </div>
+            <div class="form-group {{if form.errors.get('password'):}}has-error{{pass}}">
+                <input type="password" name="password" class="form-control" placeholder="{{=form.password.field.label}}"/>
+                <p class="help help-block">
+                    {{if form.errors.get('password'):}}{{=form.errors['password']}}{{pass}}
+                </p>
+            </div>          
+            <div class="form-group">
+                <input class="checkbox" id="field_rememberme" name="rememberme" type="checkbox">
+                {{=_('Remember Me')}}
+            </div>
+        </div>
+        <div class="footer">                                                               
+            <button type="submit" class="btn bg-light-blue btn-block">Sign me in</button>  
+        </div>
+    </form>
+
+</div>
+{{end}}

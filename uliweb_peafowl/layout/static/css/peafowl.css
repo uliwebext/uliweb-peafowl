@@ -1,0 +1,15 @@
+
+.form-box .header {
+    background-color: #3c8dbc;    
+    background:url(../img/admin-logo2.png) #3c8dbc 5px 20px no-repeat;
+    font-size:0px;
+    min-height: 90px
+}
+
+#admin-logo {
+    background:url(../img/admin-logo-small2.png) 10px 4px no-repeat;font-size:0;
+    background-color: #367fa9;
+}
+
+#admin-models .space{padding-bottom: 10px}
+#admin-models .mmGrid .mmg-headWrapper {border-top: 2px solid #f39c12;}

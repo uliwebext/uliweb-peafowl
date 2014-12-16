@@ -1,9 +1,8 @@
-{{extend "theme/skeleton.html"}}
+{{extend "theme/basic.html"}}
 
 {{block title}}{{=settings.LAYOUT.TITLE}}{{end}}
 
-{{block content}}
-
+{{block pagecss}}
     {{block iconcss}}
         {{use "fontawesome"}}
         {{use "ionicons"}}
@@ -11,7 +10,9 @@
 
     {{block custom_css}}
     {{end}}
+{{end}}
 
+{{block content}}
 
 <div id="content-container">
 

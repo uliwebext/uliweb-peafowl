@@ -42,7 +42,15 @@
             if (opts.infinite){
                 $el.find('ul.pageList, div.limit').hide();
             }
-                
+
+            var scrolling;
+
+            if (typeof window.define === 'function' && window.define.amd !== undefined) {
+                scrolling = require("scrolling")    
+            } else {
+                scrolling = window.scrolling;
+
+            }
             scrolling(this.$mmGrid.$bodyWrapper[0], function(){
                 if (!opts.infinite) return;
                 var top = that.$mmGrid.$bodyWrapper.scrollTop();
