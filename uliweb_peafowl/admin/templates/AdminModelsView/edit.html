@@ -14,9 +14,9 @@
 {{block sidebar_breadcrumb}}
 <ol class="breadcrumb">
     <li><a href="/"><i class="fa fa-dashboard"></i>{{=_('Home')}}</a></li>
-    <li><a href="/admin">{{=_('Admin')}}</a></li>
-    <li><a href="/admin/models">{{=_('Models')}}</a></li>
-    <li><a href="/admin/models/{{=model}}">{{=model}}</a></li>
+    <li><a href="{{=ADMIN_URL}}">{{=_('Admin')}}</a></li>
+    <li><a href="{{=ADMIN_URL}}/models">{{=_('Models')}}</a></li>
+    <li><a href="{{=ADMIN_URL}}/models/{{=model}}">{{=model}}</a></li>
     <li class="active">{{=_("Edit")}}</li>
 </ol>
 {{end}}

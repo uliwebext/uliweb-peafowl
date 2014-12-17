@@ -1,6 +1,11 @@
 #coding=utf-8
 from uliweb import expose, functions
 
+def prepare_default_env(sender, env):
+    from uliweb import settings
+
+    env['ADMIN_URL'] = settings.ADMIN.ADMIN_URL
+
 def require_login_admin(f=None, next=None):
     from uliweb.utils.common import wraps
     

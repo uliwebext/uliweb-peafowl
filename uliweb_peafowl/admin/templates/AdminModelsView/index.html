@@ -18,10 +18,10 @@
 {{block sidebar_breadcrumb}}
 <ol class="breadcrumb">
     <li><a href="/"><i class="fa fa-dashboard"></i>{{=_('Home')}}</a></li>
-    <li><a href="/admin">{{=_('Admin')}}</a></li>
+    <li><a href="{{=ADMIN_URL}}">{{=_('Admin')}}</a></li>
     {{if model:}}
-        <li><a href="/admin/models">{{=_('Models')}}</a></li>
-        <li class="active"><a href="/admin/models/{{=model}}">[{{=model}}]</a></li>
+        <li><a href="{{=ADMIN_URL}}/models">{{=_('Models')}}</a></li>
+        <li class="active"><a href="{{=ADMIN_URL}}/models/{{=model}}">[{{=model}}]</a></li>
     {{else:}}
         <li class="active">{{=_('Models')}}</li>
     {{pass}}
@@ -111,7 +111,7 @@
                 var index = mmg.mmGrid('selectedItem');
                 if (index.length > 0) {
                     var data = mmg.mmGrid('row', index);
-                    window.location.href = '/admin/models/{{=model}}/edit?id='+data.id;
+                    window.location.href = '{{=ADMIN_URL}}/models/{{=model}}/edit?id='+data.id;
                 } else {
                     alert('Please choose one record first!');
                 }
@@ -123,7 +123,7 @@
                 if (items.length > 0){
                     for(var i=0; i<items.length; i++)
                         ids.push(items[i].id);
-                    $.post('/admin/models/{{=model}}/delete', {ids:ids}).success(function(data){
+                    $.post('{{=ADMIN_URL}}/models/{{=model}}/delete', {ids:ids}).success(function(data){
                         if (data.success){
                             show_message(data.message);
                             mmg.mmGrid('load');

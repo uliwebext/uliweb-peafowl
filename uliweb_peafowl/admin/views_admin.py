@@ -15,7 +15,7 @@ def login():
     if request.user:
         next = request.GET.get('next')
         if next:
-            return redirect(next)
+            return redirect(urllib.unquote(next))
     
     if request.method == 'GET':
         form.next.data = request.GET.get('next', request.referrer or default_page)
