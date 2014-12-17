@@ -39,7 +39,7 @@ requirejs.config({
             deps: ["mmgrid", "css!_mmgrid/mmTreeGrid"],
             exports: 'jQuery.fn.mmGrid'},
         "select2": {
-            deps: ["css!_select2/select2"],
+            deps: ["css!_select2/select2", "css!_select2/select2-bootstrap3"],
             exports: 'jQuery.fn.select2'
         },
         "jqdialog2": {
