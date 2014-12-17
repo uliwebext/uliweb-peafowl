@@ -1,4 +1,4 @@
-![LOGO](https://raw.github.com/longwosion/uliweb-peafowl/master/logos/uliweb-peafowl.png)
+![LOGO](https://raw.github.com/uliwebext/uliweb-peafowl/master/logos/uliweb-peafowl.png)
 
 Uliweb peafowl
 ==============
