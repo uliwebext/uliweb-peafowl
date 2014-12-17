@@ -16,7 +16,7 @@
     <script type="text/javascript"
         src="{{=url_for_static('plugins/vendor/require-%s.js' % settings.UI_CONFIG.requirejs_version)}}"></script>
     <script type="text/javascript"
-        src="{{=url_for_static('plugins/config.js')}}"></script>
+        src="{{=url_for_static('plugins/config.js')}}" v="{{=settings.GLOBAL.STATIC_VER}}"></script>
 
     {{block pagecss}}
     {{end}}

@@ -1,3 +1,15 @@
+function get_static_version() {
+    var scripts = document.getElementsByTagName('scripts'),
+        ver = '';
+    for (i = scripts.length - 1; i > -1; i -= 1) {
+        ver = script.getAttribute('static-version');
+        if(ver) {
+            return ver;
+        }
+    }
+    return ver
+}
+
 requirejs.config({
     "baseUrl": "/static/plugins/vendor",
     "paths": {
@@ -42,7 +54,7 @@ requirejs.config({
             exports: 'jQuery.fn.dialog2.helpers'
         }
     },
-    urlArgs: "bust=" +  (new Date()).getTime()
+    urlArgs: get_static_version()
 });
 
 // Load the main app module to start the app
