@@ -1,0 +1,70 @@
+{{extend "admin_layout.html"}}
+
+{{block sidemenu}}
+    {{<< functions.menu('ADMIN', 'admin_models_config', _class='sidebar-menu')}}
+{{end}}
+
+{{block sidebar_page_title}}
+    {{=_('Data Models')}}
+{{end}}
+
+{{block sidebar_page_subtitle}}
+    {{=_('configuration')}}
+{{end}}
+
+{{block custom_css}}
+{{end}}
+
+{{block sidebar_breadcrumb}}
+<ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{{=ADMIN_URL}}">Admin</a></li>
+    <li><a href="{{=ADMIN_URL}}/models_config">Data Models</a></li>
+    {{block sub_breadcrumb}}{{end}}
+</ol>
+{{end}}
+
+{{block main_content}}
+<div class="row">
+    <div class="col-sm-12">
+        {{block sub_content}}
+        <div class="space">
+            <a class="btn btn-primary" id="btnAdd" href="{{=ADMIN_URL}}/models_config/add">
+                <i class="fa fa-plus"></i> {{=_('Add')}}
+            </a>
+        </div>
+        <table class="table table-hover">
+            {{include "utils/inc_create_table.html"}}
+        </table>
+        {{end}}
+    </div>
+</div>
+
+<script>
+    $(function(){
+        $('a.action-unpublish').on('click', function(e){
+            e.preventDefault();
+            var $this = $(this);
+            var ans = confirm("{{=_('Do you want to unpulish this Model?')}}");
+            if (ans){
+                $.post($this.attr('href')).success(function(r){
+                    if(r.success)
+                        $this.remove();
+                });
+            }
+        });
+
+        $('a.action-delete').on('click', function(e){
+            e.preventDefault()
+            var $this = $(this);
+            var ans = confirm("{{=_('Do you want to unpulish this Model?')}}");
+            if (ans){
+                $.post($this.attr('href')).success(function(r){
+                    if(r.success)
+                        $($this.parents('tr')[0]).remove();
+                });
+            }
+        });
+    });
+</script>
+{{end}}

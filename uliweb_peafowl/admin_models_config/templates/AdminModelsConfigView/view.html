@@ -1,0 +1,79 @@
+<!-- param: model_name, uuid, uuids, columns, object, published_uuid -->
+
+{{extend "AdminModelsConfigView/index.html"}}
+
+{{block sub_breadcrumb}}
+<li><a href="/admin/models_config/view/{{=model_name}}">[{{=model_name}}]</a></li>
+{{end}}
+
+{{block sub_content}}
+{{use "avalon"}}
+{{link "<script>avalon.config({loader:false});</script>"}}
+
+<div class="row">
+    <div class="col-sm-9">
+        <div class="space"></div>
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">{{=_('Basic Information')}}
+                    <button class="btn btn-success btn-xs pull-right" id="btnEdit">
+                        <i class="fa fa-edit"></i> {{=_('Edit')}}
+                    </button>
+                </h3>
+            </div>
+            <div class="panel-body">
+                {{<< view}}
+            </div>
+        </div>
+
+        {{include "AdminModelsConfigView/inc_view_columns.html"}}
+
+    </div>
+    <div class="col-sm-3" ms-controller="publish">
+        <button class="btn btn-danger btn-block space" ms-if="uuid==published_uuid" ms-click="unpublish">{{=_('Unpublish')}}</button>
+        <button class="btn btn-success btn-block space" ms-if="uuid!=published_uuid" ms-click="publish">{{=_('Publish')}}</button>
+        <div class="list-group space">
+            <span class="list-group-item"><b>{{=_('Versions')}}:</b></span>
+            <a ms-href="/admin/models_config/view/{{=model_name}}?uuid={%u%}"
+               class="list-group-item narrow"
+               ms-repeat-u="uuids"
+               ms-class="active:u==uuid"
+               >{%u%}
+                <span class="label label-success pull-right" ms-if="u==published_uuid">{{=_('Published')}}</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    var publish = avalon.define({
+        $id:'publish'
+        , uuid: {{=json_dumps(uuid)}}
+        , uuids: {{=json_dumps(uuids)}}
+        , published_uuid: {{=json_dumps(published_uuid)}}
+        , publish: function(){
+            $.post('{{=ADMIN_URL}}/models_config/publish/{{=model_name}}?uuid={{=uuid}}')
+                .success(function(r){
+                    if(r.success){
+                        publish.published_uuid = publish.uuid;
+                        show_message(r.message);
+                    }
+                    else
+                        show_message(r.message, 'error');
+
+                })
+                .fail(function(r){
+                    show_message('There are some errors!', 'error');
+                });
+        }
+        , unpublish: function(){
+            $.post('{{=ADMIN_URL}}/models_config/unpublish/{{=model_name}}')
+                .success(function(r){
+                    if (r.success){
+                        publish.published_uuid = '';
+                    }
+                });
+        }
+    });
+</script>
+{{end}}

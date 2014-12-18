@@ -46,7 +46,7 @@ def default_admin_menu(name, active='', validators=None, id=None, _class=None):
                 _lica.append('open')
             _licstr = 'class="%s"' % (' '.join(_lica)) if _lica else ''
             s.extend([indent, '<li ', _licstr, '><a href="', y['link'], '">'])
-            if y['icon']:
+            if 'icon' in y:
                 s.extend(['<i class="fa fa-%s"></i>' % y['icon']])
             s.extend([indent, '<span>', str(y['title']), '</span>', '</a>'])
         elif _t == 'open':

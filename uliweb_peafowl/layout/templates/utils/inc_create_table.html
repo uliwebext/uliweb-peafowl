@@ -1,0 +1,40 @@
+<!-- :param: view, objects -->
+<colgroup>
+    {{for f in view.table_info['fields_list']:}}
+        {{if f.get('hidden', False):}}
+            {{continue}}
+        {{pass}}
+        {{w = f.get('width', -1)}}
+        {{if isinstance(w, int):}}
+            {{if w > -1:}}
+                <col width="{{=w}}px"></col>
+            {{else:}}
+                <col width="*"></col>
+            {{pass}}
+        {{else:}}
+            <col width="{{=w}}"></col>
+        {{pass}}
+    {{pass}}
+</colgroup>
+<thead>
+    <tr>
+        {{for f in view.table_info['fields_list']:}}
+            {{if f.get('hidden', False):}}
+                {{continue}}
+            {{pass}}
+            <th>{{=f.get('verbose_name') or f['name']}}</th>
+        {{pass}}
+    </tr>
+</thead>
+<tbody>
+    {{for obj in objects:}}
+    <tr>
+        {{for f in view.table_info['fields_list']:}}
+            {{if f.get('hidden', False):}}
+                {{continue}}
+            {{pass}}
+            <td>{{<< obj[ f['name'] ] }}</td>
+        {{pass}}
+    </tr>
+    {{pass}}
+</tbody>
