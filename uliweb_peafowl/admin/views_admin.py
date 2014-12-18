@@ -28,7 +28,7 @@ def login():
             if f:
                 request.session.remember = form.rememberme.data
                 login(form.username.data)
-                next = urllib.unquote(request.POST.get('next', default_page))
+                next = urllib.unquote(request.GET.get('next', default_page))
                 return redirect(next)
             else:
                 form.errors.update(d)

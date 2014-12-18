@@ -2,7 +2,7 @@ function get_static_version() {
     var scripts = document.getElementsByTagName('scripts'),
         ver = '';
     for (i = scripts.length - 1; i > -1; i -= 1) {
-        ver = script.getAttribute('static-version');
+        ver = script.getAttribute('v');
         if(ver) {
             return ver;
         }
@@ -56,6 +56,3 @@ requirejs.config({
     },
     urlArgs: get_static_version()
 });
-
-// Load the main app module to start the app
-requirejs(["app/main", "markdown"]);
