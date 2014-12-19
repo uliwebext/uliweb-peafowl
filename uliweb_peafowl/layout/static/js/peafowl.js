@@ -1,5 +1,5 @@
 var show_message = function(message, category){
-    require(['pnotify'], function(pnotify){
+    require(['pnotify'], function(PNotify){
         new PNotify({
             history: {history: false}
             , text: message

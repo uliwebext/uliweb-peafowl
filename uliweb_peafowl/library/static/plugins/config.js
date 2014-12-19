@@ -1,3 +1,7 @@
+define('jquery', function(){
+    return window.jQuery;
+});
+
 function get_static_version() {
     var scripts = document.getElementsByTagName('scripts'),
         ver = '';
