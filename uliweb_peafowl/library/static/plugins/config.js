@@ -26,7 +26,8 @@ requirejs.config({
         "select2"          : '_select2/select2',
         "jqdialog2"        : 'jquery.dialog2/jquery.dialog2',
         "jqdialog2-helper" : "jquery.dialog2/jquery.dialog2.helpers",
-        "adminLTE"         : "app/adminLTE"
+        "adminLTE"         : "app/adminLTE",
+        "pnotify"          : '_pnotify/pnotify.min'
     },
     "shim": {
         "mmgrid": {
@@ -52,7 +53,10 @@ requirejs.config({
         "jqdialog2-helper": {
             deps: ["jqdialog2"],
             exports: 'jQuery.fn.dialog2.helpers'
-        }
+        },
+        "pnotify": {
+            deps: ['css!_pnotify/pnotify.min'],
+            exports: 'pnotify'},
     },
     urlArgs: get_static_version()
 });

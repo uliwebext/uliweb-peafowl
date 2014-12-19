@@ -232,6 +232,9 @@ class AdminModelsConfigView(object):
         return json({'success':True, 'message':'Model %s(%s) has been published successfully!' % (model_name, uuid)})
 
     def unpublish(self, model_name):
+        count = self.model_his.filter(self.model_his.c.model_name==model_name).count()
+        if count <= 1:
+            return json({'success':False, 'message':'There should be at lastest one version existed'})
         row = self.model.get(self.model.c.model_name==model_name)
         row.uuid = ''
         row.published_time = None
@@ -244,4 +247,16 @@ class AdminModelsConfigView(object):
 
         for obj in self.model_his.filter(self.model_his.c.model_name==model_name):
             obj.delete()
+        return json({'success':True})
+
+    def delete_version(self, model_name):
+        uuid = request.GET.get('uuid')
+        row = self.model.get(self.model.c.model_name==model_name)
+
+        version = self._get_model(model_name, uuid)
+        if version.uuid != row.uuid:
+            version.delete()
+        else:
+            return json({'success':False, 'message':"You can't delete published version"})
+
         return json({'success':True})
