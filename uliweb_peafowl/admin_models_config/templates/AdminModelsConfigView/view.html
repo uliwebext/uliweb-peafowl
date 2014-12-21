@@ -21,11 +21,11 @@
         <div class="space"></div>
         <div class="panel panel-info">
             <div class="panel-heading">
-                <h3 class="panel-title" data-toggle="collapse" data-target="#basic_info">{{=_('Basic Information')}}
-                    <button class="btn btn-success btn-xs pull-right" id="btnEdit">
-                        <i class="fa fa-edit"></i> {{=_('Edit')}}
-                    </button>
-                </h3>
+                <span class="panel-title cursor-pointer" data-toggle="collapse" data-target="#basic_info">{{=_('Basic Information')}}
+                </span>
+                <button class="btn btn-success btn-xs pull-right" id="btnEdit">
+                    <i class="fa fa-edit"></i> {{=_('Edit')}}
+                </button>
             </div>
             <div class="panel-body collapse in" id="basic_info">
                 {{<< view}}
@@ -33,6 +33,7 @@
         </div>
 
         {{include "AdminModelsConfigView/inc_view_columns.html"}}
+        {{include "AdminModelsConfigView/inc_view_indexes.html"}}
 
     </div>
     <div class="col-sm-3" ms-controller="publish">

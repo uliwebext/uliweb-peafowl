@@ -136,6 +136,9 @@ class AdminModelsConfigView(object):
                          'uuid':uuid, 'object':obj, 'published_uuid':model.uuid if model else ''}
         if obj:
             template_data['columns'] = eval(obj.fields or '[]')
+            template_data['indexes'] = eval(obj.indexes or '[]')
+            template_data['extension_columns'] = eval(obj.extension_fields or '[]')
+            template_data['extension_indexes'] = eval(obj.extension_indexes or '[]')
             fields = ['model_name', 'display_name', 'table_name', 'basemodel', 'has_extension', 'extension_model']
             view = functions.DetailView(self.model_his, obj=obj, fields=fields,
                                         template_data=template_data)
@@ -143,6 +146,9 @@ class AdminModelsConfigView(object):
         else:
             template_data['view'] = ''
             template_data['columns'] = []
+            template_data['indexes'] = []
+            template_data['extension_columns'] = []
+            template_data['extension_indexes'] = []
             return template_data
 
     def save(self, model_name):
@@ -161,8 +167,9 @@ class AdminModelsConfigView(object):
                                        'extension_indexes')
         if list_columns:
             old_column = eval(old_column or '[]')
+
+        index = -1
         if action in ('edit', 'delete'):
-            index = -1
             for x in range(len(old_column)):
                 if old_column[x]['name'] == column['name']:
                     index = x
@@ -179,6 +186,7 @@ class AdminModelsConfigView(object):
                 data = obj.to_dict()
                 data.pop('id')
                 data.pop('create_time')
+                data['status'] = '0'
                 obj = self.model_his(**data)
                 obj.uuid = get_uuid()[:6]
 

@@ -1,12 +1,11 @@
 <div class="space"></div>
 <div class="panel panel-info" ms-controller="columns">
     <div class="panel-heading">
-        <h3 class="panel-title" data-toggle="collapse" data-target="#columns">{{=_('Columns')}}
-            <button class="btn btn-success btn-xs pull-right" id="btnAdd"
-                    data-toggle="modal" data-target="#editColumn">
-                <i class="fa fa-plus"></i> {{=_('Add')}}
-            </button>
-        </h3>
+        <span class="panel-title cursor-pointer" data-toggle="collapse" data-target="#columns">{{=_('Columns')}}
+        </span>
+        <button class="btn btn-success btn-xs pull-right" id="btnAdd" ms-click="add">
+            <i class="fa fa-plus"></i> {{=_('Add')}}
+        </button>
     </div>
     <div id="columns" class="panel-body collapse in">
         <table class="table table-hover">
@@ -79,13 +78,18 @@
                     else{
                         //if uuid is not equal with old uuid, then just to new page
                         if (r.data.uuid != uuid){
-                            window.location.href = '/admin/models_config/view/{{=model_name}}?uuid=' + r.data.uuid;
+                            window.location.href = '{{=ADMIN_URL}}/models_config/view/{{=model_name}}?uuid=' + r.data.uuid;
                         }else{
                             columns.columns.splice(index, 1);
                         }
                     }
                 });
             }
+        }
+        , add: function(){
+            editColumn.init('add', {});
+            editColumn.type = '';
+            $('#editColumn').modal('show');
         }
         , edit: function(el){
             var d = avalon.mix({}, el.$model);
@@ -170,7 +174,7 @@
 
 <script>
     var uuid = {{=json_dumps(uuid)}};
-    var default_value = {name:'', type:'', verbose_name:'', nullable:true,
+    var default_column_value = {name:'', type:'', verbose_name:'', nullable:true,
             index:false, unique:false, max_length:255, default:'',
             server_default:'', hint:'', required:false, reference_class:'',
             collection_name:'',
@@ -186,7 +190,7 @@
         , init: function(action, data){
             if (action) editColumn.action = action;
             else editColumn.action = action || 'add';
-            editColumn.value = avalon.mix({}, data || default_value);
+            editColumn.value = avalon.mix({}, default_column_value, data);
             editColumn.type = '';
 
             //watch type changes
@@ -252,9 +256,9 @@
     });
     editColumn.$watch('action', function(value){
         if (value == 'add')
-            editColumn.title = '{{=_('Add')}}';
+            editColumn.title = '{{=_('Add Column')}}';
         else{
-            editColumn.title = '{{=_('Edit')}}';
+            editColumn.title = '{{=_('Edit Column')}}';
         }
     });
     $(function(){

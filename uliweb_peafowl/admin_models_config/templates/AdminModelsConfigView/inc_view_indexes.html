@@ -1,0 +1,210 @@
+<div class="space"></div>
+<div class="panel panel-info" ms-controller="indexes">
+    <div class="panel-heading">
+        <span class="panel-title cursor-pointer" data-toggle="collapse" data-target="#indexes">{{=_('Indexes')}}
+        </span>
+        <button class="btn btn-success btn-xs pull-right" id="btnAdd" ms-click="add">
+            <i class="fa fa-plus"></i> {{=_('Add')}}
+        </button>
+    </div>
+    <div id="indexes" class="panel-body collapse in">
+        <table class="table table-hover">
+            <colgroup>
+                <col width="*"></col>
+                <col width="*"></col>
+                <col width="50px"></col>
+                <col width="70px"></col>
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>{{=_('Name')}}</th>
+                    <th>{{=_('Fields')}}</th>
+                    <th>{{=_('Unique')}}</th>
+                    <th>{{=_('Action')}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ms-repeat="indexes" ms-class="warning:el._reserved">
+                    <td>{% el.name %}</td>
+                    <td>
+                        {% el.fields.join(',') %}
+                    </td>
+                    <td><i class="fa" ms-class-1="fa-square-o:!el.unique" ms-class-2="fa-check-square-o:el.unique"></i></td>
+                    <td>
+                        <button class="btn btn-success btn-xs" title="Edit" ms-click="edit(el)"><i class="fa fa-edit"></i></button>
+                        <button class="btn btn-danger btn-xs" title="Delete" ms-click="remove(el.name)" ms-if="!el._reserved"><i class="fa fa-remove"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    var indexes_info = {{=json_dumps(indexes)}};
+    var indexes = avalon.define({
+        $id: 'indexes'
+        , indexes: indexes_info
+        , remove: function(name){
+            var index = -1;
+            for(var i=0, _len=indexes.indexes.length; i<_len; i++){
+                if (indexes.indexes[i].name == name){
+                    index = i;
+                    break;
+                }
+            }
+            if (index >= 0){
+                var s = avalon.mix([], indexes.indexes.$model);
+                var info = s.splice(index, 1);
+                $.post('{{=ADMIN_URL}}/models_config/save/{{=model_name}}?uuid={{=uuid}}&column_name=indexes&action=delete', {indexes:JSON.stringify(info[0])})
+                .success(function(r){
+                    if (!r.success){
+                        show_message(r.message, 'error');
+                    }
+                    else{
+                        //if uuid is not equal with old uuid, then just to new page
+                        if (r.data.uuid != uuid){
+                            window.location.href = '{{=ADMIN_URL}}/models_config/view/{{=model_name}}?uuid=' + r.data.uuid;
+                        }else{
+                            indexes.indexes.splice(index, 1);
+                        }
+                    }
+                });
+            }
+        }
+        , add: function(){
+            editIndex.init('add', {});
+            editIndex.type = '';
+            $('#editIndex').modal('show');
+        }
+        , edit: function(el){
+            var d = avalon.mix({}, el.$model);
+            editIndex.init('edit', d);
+            editIndex.type = el.type;
+            $('#editIndex').modal('show');
+        }
+    });
+</script>
+
+<!-- Modal -->
+<div class="modal fade" id="editIndex" tabindex="-1" role="dialog" ms-controller="editIndex">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">{% title %}</h4>
+      </div>
+      <div class="modal-body">
+        <form role="form">
+          <div class="row">
+              <div class="form-group col-sm-3">
+                <label for="indexName">{{=_('Name')}}</label>
+                <input type="text" class="form-control" id="indexName" ms-duplex="value.name" ms-attr-disabled="action=='edit'">
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="indexFields">{{=_('Fields')}}</label>
+                <select class="form-control" id="indexFields" multiple="multiple">
+                    <option ms-repeat-column="columns" ms-attr-value="column.name">{%column.name%}({%column.type%})</option>
+                </select>
+              </div>
+              <div class="form-group col-sm-3">
+                <label for="indexUnique">{{=_('Unique')}}</label>
+                <input type="checkbox" class="form-control" id="indexUnique" ms-duplex-checked="value.unique">
+              </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">{{=_('Close')}}</button>
+        <button type="button" class="btn btn-primary" ms-click="save">{{=_('Save')}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+    var uuid = {{=json_dumps(uuid)}};
+    var default_index_value = {name:'', fields:[], unique:false};
+
+    var editIndex = avalon.define({
+        $id:'editIndex'
+        , value: {}
+        , action: ''
+        , columns: []
+        , title: '{{=_('Add Index')}}'
+        , init: function(action, data){
+            if (action) editIndex.action = action;
+            else editIndex.action = action || 'add';
+            editIndex.value = avalon.mix({}, default_index_value, data);
+            editIndex.columns = $.grep(columns.columns, function(d){
+                if (d.type != 'ManyToMany' && d.type != 'TEXT' && d.type != 'BLOG')
+                    return true;
+                else return false;
+            });
+
+            $('#indexFields').val(editIndex.value.fields);
+            require(['select2'], function(select2){
+                $('#indexFields').select2('destroy');
+                $('#indexFields').select2({tagsSortable:true});
+            });
+
+        }
+        , save: function(){
+            //collection data
+            var v = editIndex.value;
+            var d = {
+                name:v.name,
+                fields:$('#indexFields').val(),
+                unique:v.unique
+            };
+
+            $.post('{{=ADMIN_URL}}/models_config/save/{{=model_name}}?uuid={{=uuid}}&column_name=indexes&action='+editIndex.action, {indexes:JSON.stringify(d)})
+                .success(function(r){
+                    if (!r.success){
+                        show_message(r.message, 'error');
+                    }
+                    else{
+                        //if uuid is not equal with old uuid, then just to new page
+                        if (r.data.uuid != uuid){
+                            window.location.href = '{{=ADMIN_URL}}/models_config/view/{{=model_name}}?uuid=' + r.data.uuid;
+                        }else{
+                            $('#editIndex').modal('hide');
+                            if(editIndex.action == 'add')
+                                indexes.indexes.push(d);
+                            else{
+                                var index = -1;
+                                for(var i=0, _len=indexes.indexes.length; i<_len; i++){
+                                    if (indexes.indexes[i].name == v.name){
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                if (index >= 0){
+                                    indexes.indexes.set(index, d);
+                                }
+                            }
+                        }
+                    }
+                })
+                .fail(function(r){
+                    show_message('Failed!', 'error');
+                });
+        }
+
+
+    });
+    editIndex.$watch('action', function(value){
+        if (value == 'add')
+            editIndex.title = '{{=_('Add Index')}}';
+        else{
+            editIndex.title = '{{=_('Edit Index')}}';
+        }
+    });
+    $(function(){
+        $('#btnAdd').on('click', function(e){
+            editIndex.init();
+        });
+    });
+</script>
+

@@ -2965,10 +2965,10 @@ the specific language governing permissions and limitations under the Apache Lic
                 items       : 'li:not(.select2-search-field)',
                 tolerance   : 'pointer',
                 stop: function() {
-                    $(this.container.find('.select2-search-choice').get().reverse()).each(function() {
+                    $(that.container.find('.select2-search-choice').get().reverse()).each(function() {
                         var id = $(this).data('select2Data').id;
-                        var option = select.find('option[value="' + id + '"]')[0];
-                        that.element.prepend(option);
+                        var option = that.select.find('option[value="' + id + '"]')[0];
+                        that.select.prepend(option);
                     });
                 }
             });
