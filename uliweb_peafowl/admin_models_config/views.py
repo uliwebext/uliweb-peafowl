@@ -78,7 +78,7 @@ class AdminModelsConfigView(object):
 
         def pre_save(data):
             from uliweb.utils.common import get_uuid, import_attr
-            from uliweb.contrib.model_config import get_model_fields
+            from uliweb.contrib.model_config import get_model_fields, get_model_indexes
 
             data['uuid'] = get_uuid()[:6]
             if not data['table_name']:
@@ -91,10 +91,12 @@ class AdminModelsConfigView(object):
             if data['basemodel']:
                 BM = import_attr(data['basemodel'])
                 data['fields'] = get_model_fields(BM)
+                data['indexes'] = get_model_indexes(BM)
 
             if data['extension_model']:
-                EM = import_attr(data['basemodel'])
+                EM = import_attr(data['extension_model'])
                 data['extension_fields'] = get_model_fields(EM)
+                data['extension_indexes'] = get_model_indexes(EM)
 
         def post_save(obj, data):
             r = self.model(model_name=obj.model_name,
@@ -217,6 +219,8 @@ class AdminModelsConfigView(object):
             return json({'success':False, 'message':"Model %s(%s) can't be found" % (model_name, uuid)})
         obj.status = '1'
         obj.published_time = date.now()
+        if len(obj.extension_fields) > 0:
+            obj.has_extension = True
         obj.save(version=True)
 
         row = self.model.get(self.model.c.model_name==model_name)
@@ -231,6 +235,8 @@ class AdminModelsConfigView(object):
         try:
             M = functions.get_model(model_name)
             M.migrate()
+            if obj.has_extension:
+                M.ext._model.migrate()
             Commit()
 
         except Exception as e:

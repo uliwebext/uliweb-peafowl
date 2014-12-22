@@ -1,0 +1,262 @@
+<div class="space"></div>
+<div class="panel panel-info" ms-controller="ext_columns">
+    <div class="panel-heading">
+        <span class="panel-title cursor-pointer" data-toggle="collapse"
+              data-target="#ext_columns">{{=_('Extension Columns')}}
+        </span>
+        <button class="btn btn-success btn-xs pull-right" id="btnAdd" ms-click="add">
+            <i class="fa fa-plus"></i> {{=_('Add')}}
+        </button>
+    </div>
+    <div id="ext_columns" class="panel-body collapse in">
+        <table class="table table-hover">
+            <colgroup>
+                <col width="*"></col>
+                <col width="*"></col>
+                <col width="*"></col>
+                <col width="50px"></col>
+                <col width="50px"></col>
+                <col width="50px"></col>
+                <col width="50px"></col>
+                <col width="70px"></col>
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>{{=_('Name')}}</th>
+                    <th>{{=_('Display')}}</th>
+                    <th>{{=_('Type')}}</th>
+                    <th>{{=_('Null')}}</th>
+                    <th>{{=_('Must')}}</th>
+                    <th>{{=_('Index')}}</th>
+                    <th>{{=_('Unique')}}</th>
+                    <th>{{=_('Action')}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ms-repeat="columns" ms-class="warning:el._reserved">
+                    <td>{% el.name %}</td>
+                    <td>{% el.verbose_name %}</td>
+                    <td>{% columns_types[el.type] %}
+                        <span ms-visible="el.max_length">({%el.max_length%})</span>
+                        <span ms-visible="el.reference_class">({%el.reference_class%})</span>
+                    </td>
+                    <td><i class="fa" ms-class-1="fa-square-o:!el.nullable" ms-class-2="fa-check-square-o:el.nullable"></i></td>
+                    <td><i class="fa" ms-class-1="fa-square-o:!el.required" ms-class-2="fa-check-square-o:el.required"></i></td>
+                    <td><i class="fa" ms-class-1="fa-square-o:!el.index" ms-class-2="fa-check-square-o:el.index"></i></td>
+                    <td><i class="fa" ms-class-1="fa-square-o:!el.unique" ms-class-2="fa-check-square-o:el.unique"></i></td>
+                    <td>
+                        <button class="btn btn-success btn-xs" title="Edit" ms-click="edit(el)"><i class="fa fa-edit"></i></button>
+                        <button class="btn btn-danger btn-xs" title="Delete" ms-click="remove(el.name)" ms-if="!el._reserved"><i class="fa fa-remove"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    var ext_columns_info = {{=json_dumps(extension_columns)}};
+    var ext_columns = avalon.define({
+        $id: 'ext_columns'
+        , columns: ext_columns_info
+        , remove: function(name){
+            var index = -1;
+            for(var i=0, _len=ext_columns.columns.length; i<_len; i++){
+                if (ext_columns.columns[i].name == name){
+                    index = i;
+                    break;
+                }
+            }
+            if (index >= 0){
+                fields = avalon.mix([], ext_columns.columns.$model);
+                var column = fields.splice(index, 1);
+                $.post('{{=ADMIN_URL}}/models_config/save/{{=model_name}}?uuid={{=uuid}}&column_name=extension_fields&action=delete', {extension_fields:JSON.stringify(column[0])})
+                .success(function(r){
+                    if (!r.success){
+                        show_message(r.message, 'error');
+                    }
+                    else{
+                        //if uuid is not equal with old uuid, then just to new page
+                        if (r.data.uuid != uuid){
+                            window.location.href = '{{=ADMIN_URL}}/models_config/view/{{=model_name}}?uuid=' + r.data.uuid;
+                        }else{
+                            ext_columns.columns.splice(index, 1);
+                        }
+                    }
+                });
+            }
+        }
+        , add: function(){
+            editExtColumn.init('add', {});
+            editExtColumn.type = '';
+            $('#editExtColumn').modal('show');
+        }
+        , edit: function(el){
+            var d = avalon.mix({}, el.$model);
+            editExtColumn.init('edit', d);
+            editExtColumn.type = el.type;
+            $('#editExtColumn').modal('show');
+        }
+    });
+</script>
+
+<!-- Modal -->
+<div class="modal fade" id="editExtColumn" tabindex="-1" role="dialog" ms-controller="editExtColumn">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">{% title %}</h4>
+      </div>
+      <div class="modal-body">
+        <form role="form">
+          <div class="row">
+              <div class="form-group col-sm-3">
+                <label for="extColumnName">Name</label>
+                <input type="text" class="form-control" id="extColumnName" ms-duplex="value.name" ms-attr-disabled="action=='edit'">
+              </div>
+              <div class="form-group col-sm-3">
+                <label for="extDisplayName">Display</label>
+                <input type="text" class="form-control" id="extDisplayName" ms-duplex="value.verbose_name">
+              </div>
+              <div class="form-group col-sm-2">
+                <label for="extColumnType">Type</label>
+                <select class="form-control" id="extColumnType" ms-duplex="value.type">
+                    {{for _v, _n in settings.MODELS_TYPES.items():}}
+                    <option value="{{=_v}}">{{=_n}}</option>
+                    {{pass}}
+                </select>
+              </div>
+              <div class="form-group col-sm-2" ms-visible="type=='str' || type=='CHAR'">
+                <label for="extMaxLength">Length</label>
+                <input type="number" class="form-control" id="extMaxLength" ms-duplex-number="value.max_length">
+              </div>
+              <div class="form-group col-sm-2" ms-visible="type=='Reference' || type=='OneToOne' || type=='ManyToMany'">
+                <label for="extReferenceClass">Refernce Model</label>
+                <input type="text" class="form-control" id="extReferenceClass" ms-duplex="value.reference_class">
+              </div>
+              <div class="form-group col-sm-2" ms-visible="type=='Reference' || type=='OneToOne' || type=='ManyToMany'">
+                <label for="extCollectionName">Collection Name</label>
+                <input type="text" class="form-control" id="extCollectionName" ms-duplex="value.collection_name">
+              </div>
+          </div>
+          <div class="row">
+              <div class="form-group col-sm-12">
+                <label for="extHint">Help Description</label>
+                <input type="text" class="form-control" id="extHint" ms-duplex="value.hint">
+              </div>
+          </div>
+          <div class="row">
+              <div class="checkbox col-sm-12">
+                  <label class="checkbox-inline">
+                    <input type="checkbox" ms-duplex-checked="value.nullable"> Null
+                  </label>
+                  <label class="checkbox-inline">
+                    <input type="checkbox" ms-duplex-checked="value.required"> Must
+                  </label>
+                  <label class="checkbox-inline">
+                    <input type="checkbox" ms-duplex-checked="value.index"> Index
+                  </label>
+                  <label class="checkbox-inline">
+                    <input type="checkbox" ms-duplex-checked="value.unique"> Unique
+                  </label>
+              </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">{{=_('Close')}}</button>
+        <button type="button" class="btn btn-primary" ms-click="save">{{=_('Save')}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    var editExtColumn = avalon.define({
+        $id:'editExtColumn'
+        , value: {}
+        , type: ''
+        , action: ''
+        , title: '{{=_('Add')}}'
+        , init: function(action, data){
+            if (action) editExtColumn.action = action;
+            else editExtColumn.action = action || 'add';
+            editExtColumn.value = avalon.mix({}, default_column_value, data);
+            editExtColumn.type = '';
+
+            //watch type changes
+            editExtColumn.value.$unwatch('type');
+            editExtColumn.value.$watch('type', function(value){
+                editExtColumn.type = value;
+            });
+        }
+        , save: function(){
+            //collection data
+            var v = editExtColumn.value;
+            var d = {
+                name:v.name,
+                type:v.type,
+                verbose_name:v.verbose_name || v.name,
+                nullable:v.nullable,
+                index:v.index,
+                unique:v.unique,
+                required:v.required,
+                hint:v.hint
+            };
+            if (v.type == 'str' || v.type == 'CHAR'){
+                d.max_length = v.max_length;
+            }
+            else if(v.type == 'Reference' || v.type == 'OneToOne' || v.type == 'ManyToMany'){
+                d.reference_class = v.reference_class;
+                d.collection_name = v.collection_name;
+            }
+
+            $.post('{{=ADMIN_URL}}/models_config/save/{{=model_name}}?uuid={{=uuid}}&column_name=extension_fields&action='+editExtColumn.action, {extension_fields:JSON.stringify(d)})
+                .success(function(r){
+                    if (!r.success){
+                        show_message(r.message, 'error');
+                    }
+                    else{
+                        //if uuid is not equal with old uuid, then just to new page
+                        if (r.data.uuid != uuid){
+                            window.location.href = '{{=ADMIN_URL}}/models_config/view/{{=model_name}}?uuid=' + r.data.uuid;
+                        }else{
+                            $('#editExtColumn').modal('hide');
+                            if(editExtColumn.action == 'add')
+                                ext_columns.columns.push(d);
+                            else{
+                                var index = -1;
+                                for(var i=0, _len=ext_columns.columns.length; i<_len; i++){
+                                    if (ext_columns.columns[i][0] == v.name){
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                if (index >= 0)
+                                    ext_columns.columns.set(index, d);
+                            }
+                        }
+                    }
+                })
+                .fail(function(r){
+                    show_message('Failed!', 'error');
+                });
+        }
+
+
+    });
+    editExtColumn.$watch('action', function(value){
+        if (value == 'add')
+            editExtColumn.title = '{{=_('Add Extension Column')}}';
+        else{
+            editExtColumn.title = '{{=_('Edit Extension Column')}}';
+        }
+    });
+    $(function(){
+        $('#btnAdd').on('click', function(e){
+            editExtColumn.init();
+        });
+    });
+</script>
+

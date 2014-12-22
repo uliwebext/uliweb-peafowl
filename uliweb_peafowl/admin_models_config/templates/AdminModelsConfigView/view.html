@@ -34,11 +34,13 @@
 
         {{include "AdminModelsConfigView/inc_view_columns.html"}}
         {{include "AdminModelsConfigView/inc_view_indexes.html"}}
+        {{include "AdminModelsConfigView/inc_view_extension_columns.html"}}
+        {{include "AdminModelsConfigView/inc_view_extension_indexes.html"}}
 
     </div>
     <div class="col-sm-3" ms-controller="publish">
         <button class="btn btn-danger btn-block space" ms-if="uuid==published_uuid" ms-click="unpublish">{{=_('Unpublish')}}</button>
-        <button class="btn btn-success btn-block space" ms-if="uuid!=published_uuid && uuids.length>1" ms-click="publish">{{=_('Publish')}}</button>
+        <button class="btn btn-success btn-block space" ms-if="uuid!=published_uuid && uuids.length>0" ms-click="publish">{{=_('Publish')}}</button>
         <div class="list-group space">
             <span class="list-group-item"><b>{{=_('Versions')}}:</b></span>
             <div class="list-group-item narrow"
@@ -83,6 +85,8 @@
                 .success(function(r){
                     if (r.success){
                         publish.published_uuid = '';
+                    }else{
+                        show_message(r.message, 'error');
                     }
                 });
         }

@@ -1,0 +1,250 @@
+<div class="space"></div>
+<div class="panel panel-info" ms-controller="ext_indexes">
+    <div class="panel-heading">
+        <span class="panel-title cursor-pointer" data-toggle="collapse"
+              data-target="#ext_indexes">{{=_('Extension Indexes')}}
+        </span>
+        <button class="btn btn-success btn-xs pull-right" id="btnAdd" ms-click="add">
+            <i class="fa fa-plus"></i> {{=_('Add')}}
+        </button>
+    </div>
+    <div id="ext_indexes" class="panel-body collapse in">
+        <table class="table table-hover">
+            <colgroup>
+                <col width="*"></col>
+                <col width="*"></col>
+                <col width="50px"></col>
+                <col width="70px"></col>
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>{{=_('Name')}}</th>
+                    <th>{{=_('Fields')}}</th>
+                    <th>{{=_('Unique')}}</th>
+                    <th>{{=_('Action')}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ms-repeat="indexes" ms-class="warning:el._reserved">
+                    <td>{% el.name %}</td>
+                    <td>
+                        {% el.fields.join(',') %}
+                    </td>
+                    <td><i class="fa" ms-class-1="fa-square-o:!el.unique" ms-class-2="fa-check-square-o:el.unique"></i></td>
+                    <td>
+                        <button class="btn btn-success btn-xs" title="Edit" ms-click="edit(el)"><i class="fa fa-edit"></i></button>
+                        <button class="btn btn-danger btn-xs" title="Delete" ms-click="remove(el.name)" ms-if="!el._reserved"><i class="fa fa-remove"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    var ext_indexes_info = {{=json_dumps(extension_indexes)}};
+    var ext_indexes = avalon.define({
+        $id: 'ext_indexes'
+        , indexes: ext_indexes_info
+        , remove: function(name){
+            var index = -1;
+            for(var i=0, _len=ext_indexes.indexes.length; i<_len; i++){
+                if (ext_indexes.indexes[i].name == name){
+                    index = i;
+                    break;
+                }
+            }
+            if (index >= 0){
+                var s = avalon.mix([], ext_indexes.indexes.$model);
+                var info = s.splice(index, 1);
+                $.post('{{=ADMIN_URL}}/models_config/save/{{=model_name}}?uuid={{=uuid}}&column_name=extension_indexes&action=delete', {extension_indexes:JSON.stringify(info[0])})
+                .success(function(r){
+                    if (!r.success){
+                        show_message(r.message, 'error');
+                    }
+                    else{
+                        //if uuid is not equal with old uuid, then just to new page
+                        if (r.data.uuid != uuid){
+                            window.location.href = '{{=ADMIN_URL}}/models_config/view/{{=model_name}}?uuid=' + r.data.uuid;
+                        }else{
+                            ext_indexes.indexes.splice(index, 1);
+                        }
+                    }
+                });
+            }
+        }
+        , add: function(){
+            editExtIndex.init('add', {});
+            editExtIndex.type = '';
+            $('#editExtIndex').modal('show');
+        }
+        , edit: function(el){
+            var d = avalon.mix({}, el.$model);
+            editExtIndex.init('edit', d);
+            editExtIndex.type = el.type;
+            $('#editExtIndex').modal('show');
+        }
+    });
+</script>
+
+<!-- Modal -->
+<div class="modal fade" id="editExtIndex" tabindex="-1" role="dialog" ms-controller="editExtIndex">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">{% title %}</h4>
+      </div>
+      <div class="modal-body">
+        <form role="form">
+          <div class="row">
+              <div class="form-group col-sm-3">
+                <label for="extIndexName">{{=_('Name')}}</label>
+                <input type="text" class="form-control" id="extIndexName" name="indexName"
+                       ms-duplex="value.name" ms-attr-disabled="action=='edit'" required>
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="extIndexFields">{{=_('Fields')}}</label>
+                <select class="form-control" id="extIndexFields" multiple="multiple"
+                        name="indexFields" required>
+                    <option ms-repeat-column="columns" ms-attr-value="column.name">{%column.name%}({%column.type%})</option>
+                </select>
+              </div>
+              <div class="form-group col-sm-3">
+                <label for="extIndexUnique">{{=_('Unique')}}</label>
+                <input type="checkbox" class="form-control" id="extIndexUnique" name="indexUnique"
+                       ms-duplex-checked="value.unique">
+              </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">{{=_('Close')}}</button>
+        <button type="button" class="btn btn-primary" ms-click="save">{{=_('Save')}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+    var ext_index_validator;
+    //add validate
+    require(['jqvalidation'], function(){
+        /*$.validator.addMethod('notEmpty', function(value, element, arg){
+        console.log(value, element, arg);
+            return value;
+        }, "Please choose at least one value");
+        */
+        $.validator.setDefaults({
+            debug: true,
+            ignore: null,
+            errorElement: "span",
+            errorClass: "help-block",
+            highlight: function (element, errorClass, validClass) {
+                $(element).closest('.form-group').addClass('has-error');
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).closest('.form-group').removeClass('has-error');
+            },
+            errorPlacement: function (error, element) {
+                if (element.parent('.input-group').length || element.prop('type') === 'checkbox' || element.prop('type') === 'radio') {
+                    error.insertAfter(element.parent());
+                } else {
+                    error.insertAfter(element);
+                }
+            }
+        });
+        ext_index_validator = $('#editExtIndex form').validate(
+        /*{
+            rules:{
+                indexFields:'notEmpty'
+            }
+        }*/);
+    });
+
+    var editExtIndex = avalon.define({
+        $id:'editExtIndex'
+        , value: {}
+        , action: ''
+        , columns: []
+        , title: '{{=_('Add Index')}}'
+        , init: function(action, data){
+            if (action) editExtIndex.action = action;
+            else editExtIndex.action = action || 'add';
+            editExtIndex.value = avalon.mix({}, default_index_value, data);
+            editExtIndex.columns = $.grep(ext_columns.columns, function(d){
+                if (d.type != 'ManyToMany' && d.type != 'TEXT' && d.type != 'BLOG')
+                    return true;
+                else return false;
+            });
+
+            $('#extIndexFields').val(editExtIndex.value.fields);
+            require(['select2'], function(select2){
+                $('#extIndexFields').select2('destroy');
+                $('#extIndexFields').select2({tagsSortable:true});
+            });
+
+        }
+        , save: function(){
+            var flag = ext_index_validator.form();
+            if (!flag) return;
+        console.log('xxxxxxxxxx');
+            //collection data
+            var v = editExtIndex.value;
+            var d = {
+                name:v.name,
+                fields:$('#extIndexFields').val() || [],
+                unique:v.unique
+            };
+
+            $.post('{{=ADMIN_URL}}/models_config/save/{{=model_name}}?uuid={{=uuid}}&column_name=extension_indexes&action='+editExtIndex.action, {extension_indexes:JSON.stringify(d)})
+                .success(function(r){
+                    if (!r.success){
+                        show_message(r.message, 'error');
+                    }
+                    else{
+                        //if uuid is not equal with old uuid, then just to new page
+                        if (r.data.uuid != uuid){
+                            window.location.href = '{{=ADMIN_URL}}/models_config/view/{{=model_name}}?uuid=' + r.data.uuid;
+                        }else{
+                            $('#editExtIndex').modal('hide');
+                            if(editExtIndex.action == 'add')
+                                ext_indexes.indexes.push(d);
+                            else{
+                                var index = -1;
+                                for(var i=0, _len=ext_indexes.indexes.length; i<_len; i++){
+                                    if (ext_indexes.indexes[i].name == v.name){
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                if (index >= 0){
+                                    ext_indexes.indexes.set(index, d);
+                                }
+                            }
+                        }
+                    }
+                })
+                .fail(function(r){
+                    show_message('Failed!', 'error');
+                });
+        }
+
+
+    });
+    editExtIndex.$watch('action', function(value){
+        if (value == 'add')
+            editExtIndex.title = '{{=_('Add Extension Index')}}';
+        else{
+            editExtIndex.title = '{{=_('Edit Extension Index')}}';
+        }
+    });
+    $(function(){
+        $('#btnAdd').on('click', function(e){
+            editExtIndex.init();
+        });
+    });
+
+</script>
+
