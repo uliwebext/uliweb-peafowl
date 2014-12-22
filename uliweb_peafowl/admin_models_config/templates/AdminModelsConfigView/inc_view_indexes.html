@@ -99,17 +99,20 @@
           <div class="row">
               <div class="form-group col-sm-3">
                 <label for="indexName">{{=_('Name')}}</label>
-                <input type="text" class="form-control" id="indexName" ms-duplex="value.name" ms-attr-disabled="action=='edit'">
+                <input type="text" class="form-control" id="indexName" name="indexName"
+                       ms-duplex="value.name" ms-attr-disabled="action=='edit'" required>
               </div>
               <div class="form-group col-sm-6">
                 <label for="indexFields">{{=_('Fields')}}</label>
-                <select class="form-control" id="indexFields" multiple="multiple">
+                <select class="form-control" id="indexFields" multiple="multiple"
+                        name="indexFields" required>
                     <option ms-repeat-column="columns" ms-attr-value="column.name">{%column.name%}({%column.type%})</option>
                 </select>
               </div>
               <div class="form-group col-sm-3">
                 <label for="indexUnique">{{=_('Unique')}}</label>
-                <input type="checkbox" class="form-control" id="indexUnique" ms-duplex-checked="value.unique">
+                <input type="checkbox" class="form-control" id="indexUnique" name="indexUnique"
+                       ms-duplex-checked="value.unique">
               </div>
           </div>
         </form>
@@ -126,6 +129,40 @@
 
     var uuid = {{=json_dumps(uuid)}};
     var default_index_value = {name:'', fields:[], unique:false};
+    var index_validator;
+    //add validate
+    require(['jqvalidation'], function(){
+        /*$.validator.addMethod('notEmpty', function(value, element, arg){
+        console.log(value, element, arg);
+            return value;
+        }, "Please choose at least one value");
+        */
+        $.validator.setDefaults({
+            debug: true,
+            ignore: null,
+            errorElement: "span",
+            errorClass: "help-block",
+            highlight: function (element, errorClass, validClass) {
+                $(element).closest('.form-group').addClass('has-error');
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).closest('.form-group').removeClass('has-error');
+            },
+            errorPlacement: function (error, element) {
+                if (element.parent('.input-group').length || element.prop('type') === 'checkbox' || element.prop('type') === 'radio') {
+                    error.insertAfter(element.parent());
+                } else {
+                    error.insertAfter(element);
+                }
+            }
+        });
+        index_validator = $('#editIndex form').validate(
+        /*{
+            rules:{
+                indexFields:'notEmpty'
+            }
+        }*/);
+    });
 
     var editIndex = avalon.define({
         $id:'editIndex'
@@ -151,11 +188,13 @@
 
         }
         , save: function(){
+            var flag = index_validator.form();
+            if (!flag) return;
             //collection data
             var v = editIndex.value;
             var d = {
                 name:v.name,
-                fields:$('#indexFields').val(),
+                fields:$('#indexFields').val() || [],
                 unique:v.unique
             };
 
@@ -206,5 +245,6 @@
             editIndex.init();
         });
     });
+
 </script>
 

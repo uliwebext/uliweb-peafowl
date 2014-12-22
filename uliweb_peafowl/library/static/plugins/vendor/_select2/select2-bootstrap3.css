@@ -30,3 +30,15 @@ border-top-right-radius: 0;
 border-bottom-right-radius: 0;
 border-color:#ccc;
 }
+
+.select2-container-multi .select2-choices{
+position:initial;
+border:1px solid #ccc;
+background-image:none;
+}
+.select2-container-multi.form-control{
+height:auto;
+}
+.has-error .select2-container-multi .select2-choices{
+border-color:#f56954;
+}

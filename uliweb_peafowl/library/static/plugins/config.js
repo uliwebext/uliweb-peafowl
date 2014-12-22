@@ -31,7 +31,11 @@ requirejs.config({
         "jqdialog2"        : 'jquery.dialog2/jquery.dialog2',
         "jqdialog2-helper" : "jquery.dialog2/jquery.dialog2.helpers",
         "adminLTE"         : "app/adminLTE",
-        "pnotify"          : '_pnotify/pnotify.min'
+        "pnotify"          : '_pnotify/pnotify.min',
+        "jqvalidation"     : '_jquery.validation/jquery.validate.min',
+        "../jquery.validate.min"     : '_jquery.validation/jquery.validate.min',
+        "jqvalidation_zh"  : '_jquery.validation/localization/messages_zh.min'
+//        "bootstrapvalidator": '_bootstrapvalidator/bootstrapValidator.min'
     },
     "shim": {
         "mmgrid": {
@@ -61,6 +65,9 @@ requirejs.config({
         "pnotify": {
             deps: ['css!_pnotify/pnotify.min'],
             exports: 'pnotify'},
+        "bootstrapvalidator": {
+            deps: ['css!_bootstrapvalidator/bootstrapValidator.min'],
+            exports: 'bootstrapValidator'}
     },
     urlArgs: get_static_version()
 });
