@@ -1,0 +1,49 @@
+{{extend "admin_layout.html"}}
+
+
+{{block sidemenu}}
+    {{<< functions.menu('ADMIN', 'library_demo', 'bootstrap3dialog', _class='sidebar-menu')}}
+{{end}}
+
+{{block sidebar_page_title}}
+    {{=_('Bootstrap3 Dialog Demo')}}
+{{end}}
+
+{{block sidebar_page_subtitle}}
+{{end}}
+
+{{block custom_css}}
+{{end}}
+
+{{block sidebar_breadcrumb}}
+<ol class="breadcrumb">
+    <li><a href="/"><i class="fa fa-dashboard"></i>{{=_('Home')}}</a></li>
+    <li><a href="{{=ADMIN_URL}}">{{=_('Admin')}}</a></li>
+    <li class="active">{{=_('Bootstrap3 Dialog')}}</li>
+</ol>
+{{end}}
+
+{{block main_content}}
+<button id="btnShowMessage" class="btn btn-default">Show Message</button>
+<script>
+    $('#btnShowMessage').on('click', function(e){
+        require(['bootstrap-dialog'], function(BootstrapDialog){
+            BootstrapDialog.show({
+                title: 'Default Title',
+                message: 'Click buttons below.',
+                buttons: [{
+                    label: 'Message 1',
+                    action: function(dialog) {
+                        dialog.setMessage('Message 1');
+                    }
+                }, {
+                    label: 'Message 2',
+                    action: function(dialog) {
+                        dialog.setMessage('Message 2');
+                    }
+                }]
+            });
+        });
+    });
+</script>
+{{end}}

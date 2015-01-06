@@ -34,8 +34,9 @@ requirejs.config({
         "pnotify"          : '_pnotify/pnotify.min',
         "jqvalidation"     : '_jquery.validation/jquery.validate.min',
         "../jquery.validate.min"     : '_jquery.validation/jquery.validate.min',
-        "jqvalidation_zh"  : '_jquery.validation/localization/messages_zh.min'
-//        "bootstrapvalidator": '_bootstrapvalidator/bootstrapValidator.min'
+        "jqvalidation_zh"  : '_jquery.validation/localization/messages_zh.min',
+//        "bootstrapvalidator": '_bootstrapvalidator/bootstrapValidator.min',
+        "bootstrap-dialog": '_bootstrap3.dialog/bootstrap-dialog.min'
     },
     "shim": {
         "mmgrid": {
@@ -64,10 +65,15 @@ requirejs.config({
         },
         "pnotify": {
             deps: ['css!_pnotify/pnotify.min'],
-            exports: 'pnotify'},
+            exports: 'pnotify'
+        },
         "bootstrapvalidator": {
             deps: ['css!_bootstrapvalidator/bootstrapValidator.min'],
-            exports: 'bootstrapValidator'}
+            exports: 'bootstrapValidator'
+        },
+        "bootstrap-dialog": {
+            deps: ['css!_bootstrap3.dialog/bootstrap-dialog.min']
+        }
     },
     urlArgs: get_static_version()
 });
