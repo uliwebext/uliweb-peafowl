@@ -25,14 +25,13 @@ def require_login_admin(f=None, next=None):
         _login(next=next)
         return f(*args, **kwargs)
     return _f  
-
+  
 def default_admin_menu(name, active='', validators=None, id=None, _class=None):
     """
     :param menu: menu item name
     :param active: something like "x/y/z"
     :param check: validate callback, basic validate is defined in settings
     """
-
     from plugs.menus import iter_menu
     s = []
     for _t, y in iter_menu(name, active, validators):
@@ -44,11 +43,21 @@ def default_admin_menu(name, active='', validators=None, id=None, _class=None):
                 _lica.append('active')
             if y['expand']:
                 _lica.append('open')
+            if y['subs']:
+                _lica.append("treeview")
             _licstr = 'class="%s"' % (' '.join(_lica)) if _lica else ''
             s.extend([indent, '<li ', _licstr, '><a href="', y['link'], '">'])
-            if 'icon' in y:
+            if 'icon' in y and y['icon']:
                 s.extend(['<i class="fa fa-%s"></i>' % y['icon']])
-            s.extend([indent, '<span>', str(y['title']), '</span>', '</a>'])
+            else:
+                if index > 1:
+                    s.append('<i class="fa fa-angle-double-right"></i>')
+
+
+            s.extend([indent, '<span>', str(y['title']), '</span>'])
+            if y['subs']:
+                s.append('<i class="fa fa-angle-left pull-right"></i>')
+            s.append('</a>')
         elif _t == 'open':
             pass
         elif _t == 'close':
@@ -57,9 +66,9 @@ def default_admin_menu(name, active='', validators=None, id=None, _class=None):
             if index == 0:
                 _id = (' id="%s"' % id) if id else ''
                 _cls = (' %s' % _class) if _class else ''
-                s.append('<ul class="plugs-menu%s"%s>\n' % (_cls, _id))
+                s.append('<ul class="sidebar-menu plugs-menu%s"%s>\n' % (_cls, _id))
             else:
-                s.extend(['\n', indent, '<ul>\n'])
+                s.extend(['\n', indent, '<ul class="treeview-menu">\n'])
         else:
             s.extend([indent, '</ul>\n', indent])
     
