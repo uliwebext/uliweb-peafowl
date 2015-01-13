@@ -1,0 +1,61 @@
+{{extend "admin_layout.html"}}
+
+{{block sidemenu}}
+    {{<< functions.menu('ADMIN', 'admin_sheet_config')}}
+{{end}}
+
+{{block sidebar_page_title}}
+    {{=_('表单设计')}}
+{{end}}
+
+{{block sidebar_page_subtitle}}
+    {{=_('根据Model模型创建表单布局')}} 
+{{end}}
+
+{{block custom_css}}
+{{end}}
+
+{{block sidebar_breadcrumb}}
+<ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{{=ADMIN_URL}}">Admin</a></li>
+    <li><a href="{{=ADMIN_URL}}/sheet_config">{{=_('表单设计')}}</a></li>
+    {{block sub_breadcrumb}}{{end}}
+</ol>
+{{end}}
+
+
+{{block main_content}}
+
+<div class="row">
+    <div class="col-sm-12">
+        {{block sub_content}}
+        <div class="space">
+            <a class="btn btn-primary btn-flat" id="btnAdd" href="{{=ADMIN_URL}}/sheet_config/add">
+                <i class="fa fa-plus"></i> {{=_('增加表单')}}
+            </a>
+        </div>
+        <table class="table table-hover">
+            {{include "utils/inc_create_table.html"}}
+        </table>
+        {{end}}
+    </div>
+</div>
+
+<script>
+    $(function(){
+        $('a.action-delete').on('click', function(e){
+            e.preventDefault()
+            var $this = $(this);
+            var ans = confirm("{{=_('您确认要删除这个表单吗?')}}");
+            if (ans){
+                $.post($this.attr('href')).success(function(r){
+                    if(r.success)
+                        $($this.parents('tr')[0]).remove();
+                });
+            }
+        });
+    });
+</script>
+
+{{end}}

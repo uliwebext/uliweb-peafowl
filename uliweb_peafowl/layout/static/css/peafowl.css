@@ -28,3 +28,7 @@
 
 .cursor-pointer {cursor:pointer;}
 .checkbox, .radio {padding-left:15px;}
+
+
+/* form related */
+.form-group .field_required{color:red;}

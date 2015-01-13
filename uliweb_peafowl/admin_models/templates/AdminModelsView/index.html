@@ -31,7 +31,7 @@
 
 {{block main_content}}
 <div id="admin-models" class="row">
-    <div class="col-md-3 col-sm-4">
+    <div class="col-md-3 col-sm-4 connectedSortable">
         <div class="box box-warning">
             <div class="box-body">
                 <ul class="nav nav-pills nav-stacked" id="model-list">
@@ -44,7 +44,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-9 col-sm-8">
+    <div class="col-md-9 col-sm-8 connectedSortable">
         <div class="space">
         {{if model:}}
             <a class="btn btn-primary btn-sm" id="btnAdd" href="/admin/models/{{=model}}/add">
