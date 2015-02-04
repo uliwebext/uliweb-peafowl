@@ -66,6 +66,15 @@ class AdminSheetConfigView(object):
         }
         view = functions.ListView(self.model, fields=fields, 
             fields_convert_map=fields_convert_map)
+
+        if 'data' in request.values:
+            return json(view.json())
+        else:
+            result = view.run(json_result=True)
+            return {
+                'table': view, 
+            }
+
         objects = view.objects()
         return {
             'view': view, 

@@ -6,3 +6,6 @@ class LibraryDemoView(object):
     def bootstrap3dialog(self):
         return {}
 
+    def iconsheet(self):
+        return {}
+

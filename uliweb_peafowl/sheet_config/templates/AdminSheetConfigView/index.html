@@ -35,16 +35,53 @@
                 <i class="fa fa-plus"></i> {{=_('增加表单')}}
             </a>
         </div>
-        <table class="table table-hover">
-            {{include "utils/inc_create_table.html"}}
-        </table>
+
+        <div>
+            <table id="sheetTable"></table>
+            <div id="pg" style="text-align: right;"></div>
+        </div>
+
         {{end}}
     </div>
 </div>
 
 <script>
     $(function(){
-        $('a.action-delete').on('click', function(e){
+        require(["mmgrid", "mmpaginator", "mmtreegrid", "jqutils"], function(mmgrid){
+            var query_string = $.query_string.set('data', '').toString();
+
+            var settings = {
+                multiSelect: false,
+                nowrap: true,
+                indexCol: true,
+                method:'get',
+                nameField:'field',
+                root: 'rows',
+                height:'300px',
+                checkCol:false,
+                url:"{{=request.path}}" + query_string,
+                remoteSort:true,
+                cols:{{if defined('view'):}}
+                    {{=json_dumps(view.get_columns(False))}}
+                {{else:}}
+                    {{=json_dumps(table.get_columns(False))}}
+                {{pass}},
+                idField:'id'
+            }
+
+            var pageopts = {
+                totalCountName: 'total',
+                limitParamName: 'limit'
+            }
+            
+            var pg = $('<div class="mm-pagination" style="text-align: left;"></div>');
+            $('#sheetTable').after(pg);
+            settings.plugins = [pg.mmPaginator(pageopts)];
+            
+            var mmg = $('#sheetTable').mmGrid(settings);
+
+        });
+        $("#sheetTable").delegate('a.action-delete', 'click', function(e){
             e.preventDefault()
             var $this = $(this);
             var ans = confirm("{{=_('您确认要删除这个表单吗?')}}");
