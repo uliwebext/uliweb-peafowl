@@ -48,7 +48,12 @@ def default_admin_menu(name, active='', validators=None, id=None, _class=None):
             _licstr = 'class="%s"' % (' '.join(_lica)) if _lica else ''
             s.extend([indent, '<li ', _licstr, '><a href="', y['link'], '">'])
             if 'icon' in y and y['icon']:
-                s.extend(['<i class="fa fa-%s"></i>' % y['icon']])
+                if y['icon'].startswith("ion-"):
+                    s.extend(['<i class="ion %s"></i>' % y['icon']])
+                elif y['icon'].startswith("fa-"):
+                    s.extend(['<i class="fa %s"></i>' % y['icon']])
+                else:
+                    s.extend(['<i class="fa fa-%s"></i>' % y['icon']])
             else:
                 if index > 1:
                     s.append('<i class="fa fa-angle-double-right"></i>')
