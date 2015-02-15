@@ -67,7 +67,7 @@ class AdminModelsConfigView(object):
                   'basemodel', 'has_extension', 'extension_model']
 
         def post_created_form(fcls, model):
-            from uliweb_admin.ulayout.form_helper import Bootstrap3Layout
+            from uliweb_peafowl.layout.form_helper import Bootstrap3Layout
             from uliweb.form.widgets import Button
 
             fcls.layout_class = Bootstrap3Layout

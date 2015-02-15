@@ -89,7 +89,7 @@ class AdminModelsView(object):
 
     def _post_created_form(self, fcls):
         from uliweb.form import SelectField
-        from uliweb_admin.ulayout.form_helper import Bootstrap3Layout
+        from uliweb_peafowl.layout.form_helper import Bootstrap3Layout
         from uliweb.form.widgets import Button
         from uliweb.core.html import Tag
 

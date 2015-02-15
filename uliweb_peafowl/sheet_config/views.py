@@ -87,7 +87,7 @@ class AdminSheetConfigView(object):
         fields = ['sheet_name', 'display_name', 'description', 'basemodel']
 
         def post_created_form(fcls, model):
-            from uliweb_admin.ulayout.form_helper import Bootstrap3Layout
+            from uliweb_peafowl.layout.form_helper import Bootstrap3Layout
             from uliweb.form.widgets import Button
 
             fcls.layout_class = Bootstrap3Layout
