@@ -1,0 +1,42 @@
+{{extend "admin_layout.html"}}
+
+
+{{block sidemenu}}
+    {{<< functions.menu('ADMIN', 'library_demo', 'webui_popover')}}
+{{end}}
+
+{{block sidebar_page_title}}
+    {{=_('WebUI Popover')}}
+{{end}}
+
+{{block sidebar_page_subtitle}}
+{{end}}
+
+{{block custom_css}}
+{{end}}
+
+{{block sidebar_breadcrumb}}
+<ol class="breadcrumb">
+    <li><a href="/"><i class="fa fa-dashboard"></i>{{=_('Home')}}</a></li>
+    <li><a href="{{=ADMIN_URL}}">{{=_('Admin')}}</a></li>
+    <li class="active">{{=_('WebUI Popover')}}</li>
+</ol>
+{{end}}
+
+{{block main_content}}
+<p>
+    webui-popover plugin, address: <a href="https://github.com/sandywalker/webui-popover"><i class="fa fa-external-link"></i> https://github.com/sandywalker/webui-popover</a>
+</p>
+<button id="btnShowPopup1" class="btn btn-default">Show Popup</button>
+<button id="btnShowPopup2" class="btn btn-default">Show Popup Hover</button>
+<button id="btnShowPopup3" class="btn btn-default">Show Popup Dialog</button>
+<script>
+    require(['popover'], function(){
+        $('#btnShowPopup1').webuiPopover({content:'Content'});
+        $('#btnShowPopup2').webuiPopover({'title':'Title', content:'Content', trigger:'hover', delay:50});
+        $('#btnShowPopup3').webuiPopover({content:function(data){
+            return data;
+        }, type:'async', url:'/library_demo/webui_popover_dialog', delay:50});
+    });
+</script>
+{{end}}

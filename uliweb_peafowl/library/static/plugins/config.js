@@ -36,7 +36,8 @@ requirejs.config({
         "../jquery.validate.min"     : '_jquery.validation/jquery.validate.min',
         "jqvalidation_zh"  : '_jquery.validation/localization/messages_zh.min',
 //        "bootstrapvalidator": '_bootstrapvalidator/bootstrapValidator.min',
-        "bootstrap-dialog": '_bootstrap3.dialog/bootstrap-dialog.min'
+        "bootstrap-dialog": '_bootstrap3.dialog/bootstrap-dialog.min',
+        "popover"          : '_webui_popover/jquery.webui-popover.min'
     },
     "shim": {
         "mmgrid": {
@@ -73,6 +74,9 @@ requirejs.config({
         },
         "bootstrap-dialog": {
             deps: ['css!_bootstrap3.dialog/bootstrap-dialog.min']
+        },
+        "popover":{
+            deps: ['css!_webui_popover/jquery.webui-popover.min']
         }
     },
     urlArgs: get_static_version()

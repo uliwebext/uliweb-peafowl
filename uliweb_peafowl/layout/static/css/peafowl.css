@@ -14,17 +14,19 @@
 #admin-models .space{padding-bottom: 10px}
 #admin-models .mmGrid .mmg-headWrapper {border-top: 2px solid #f39c12;}
 
-.space {margin-top:5px; margin-bottom:5px;}
-.space-top {margin-top:5px;}
-.space-bottom {margin-bottom:5px;}
-.space-left {margin-left:5px;}
-.space-right {margin-right:5px;}
-.space-lg {margin-top:10px; margin-bottom:10px;}
-.space-top-lg {margin-top:10px;}
-.space-bottom-lg {margin-bottom:10px;}
-.space-left-lg {margin-left:10px;}
-.space-right-lg {margin-right:10px;}
-.narrow {padding-top:5px;padding-bottom:5px;}
+#peafowl-body .space {margin-top:5px; margin-bottom:5px;}
+#peafowl-body .space-top {margin-top:5px;}
+#peafowl-body .space-bottom {margin-bottom:5px;}
+#peafowl-body .space-left {margin-left:5px;}
+#peafowl-body .space-right {margin-right:5px;}
+#peafowl-body .space-lg {margin-top:10px; margin-bottom:10px;}
+#peafowl-body .space-top-lg {margin-top:10px;}
+#peafowl-body .space-bottom-lg {margin-bottom:10px;}
+#peafowl-body .space-left-lg {margin-left:10px;}
+#peafowl-body .space-right-lg {margin-right:10px;}
+#peafowl-body .narrow {padding-top:5px;padding-bottom:5px;}
+#peafowl-body .narrow-top {padding-top:5px;}
+#peafowl-body .narrow-bottom {padding-bottom:5px;}
 
 .cursor-pointer {cursor:pointer;}
 .checkbox, .radio {padding-left:15px;}
