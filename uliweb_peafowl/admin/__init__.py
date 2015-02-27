@@ -25,6 +25,63 @@ def require_login_admin(f=None, next=None):
         _login(next=next)
         return f(*args, **kwargs)
     return _f  
+
+def iter_menu(name, active='', validators=None):
+
+    from plugs.menus import get_menu, _validate
+
+    x = active.split('/')
+    items = get_menu(name)
+    context = {}
+    
+    def p(menus, active, index=0):
+        
+        begin = False
+        
+        #process sub menus
+        for j in menus.get('subs', []):
+            flag = _validate(j, context, validators)
+                
+            if not flag:
+                continue
+            
+            if not begin:
+                yield 'begin', {'index':index}
+                begin = True
+                
+            yield 'open', {'index':index}
+            
+            if index < len(x):
+                _name = x[index]
+                _path = '/'.join(x[0:index+1])
+            else:
+                _name = ''
+                _path = ''
+
+            _active = active == j['id'].split(name+'/')[-1]
+            _inpath = _path == j['id'].split(name+'/')[-1]
+
+            # print j['id'].split(name+'/')[-1], _name, _path
+            # print _active, _inpath
+
+            link = j.get('link', '#')
+            title = j.get('title', j['name'])
+            expand = j.get('expand', False)
+            
+            d = j.copy()
+            d.update({'active_path': _inpath, 'active':_active, 'title':title, 'link':link, 'expand':expand, 'index':index+1})
+            yield 'item', d
+            
+            for y in p(j, active, index+1):
+                yield y
+            
+            yield 'close', {'index':index+1}
+        
+        if begin:
+            yield 'end', {'index':index}
+         
+    for m in p(items, active):
+        yield m
   
 def default_admin_menu(name, active='', validators=None, id=None, _class=None):
     """
@@ -32,14 +89,14 @@ def default_admin_menu(name, active='', validators=None, id=None, _class=None):
     :param active: something like "x/y/z"
     :param check: validate callback, basic validate is defined in settings
     """
-    from plugs.menus import iter_menu
+
     s = []
     for _t, y in iter_menu(name, active, validators):
         index = y['index']
         indent = ' '*index*2
         if _t == 'item':
             _lica = []
-            if y['active']:
+            if y['active_path']:
                 _lica.append('active')
             if y['expand']:
                 _lica.append('open')
