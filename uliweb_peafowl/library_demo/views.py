@@ -35,3 +35,124 @@ class LibraryDemoView(object):
             else:
                 r = {'success':False, 'errors':f.errors}
                 return json(r)
+
+    def _make_form(self):
+        f = {
+            'fields':[
+                {'name':'str', 'type':'str', 'label':'String', 'required':True},
+                {'name':'password', 'type':'password', 'label':'Password'},
+                {'name':'hidden', 'type':'hidden', 'label':'Hidden'},
+                {'name':'int', 'type':'int', 'label':'Integer'},
+                {'name':'float', 'type':'float', 'label':'Float'},
+                {'name':'bool', 'type':'bool', 'label':'Bool'},
+                {'name':'date', 'type':'date', 'label':'Date'},
+                {'name':'datetime', 'type':'datetime', 'label':'Datetime'},
+                {'name':'time', 'type':'time', 'label':'Time'},
+                {'name':'list', 'type':'list', 'label':'List'},
+                {'name':'select1', 'type':'select', 'label':'Single Select', 'choices':[('F', 'Female'), ('M', 'Male')]},
+                {'name':'select2', 'type':'select', 'label':'Multiple Select', 'choices':[('F', 'Female'), ('M', 'Male')], 'multiple':True},
+                {'name':'file', 'type':'file', 'label':'File'},
+                {'name':'image', 'type':'image', 'label':'Image'},
+                {'name':'radios1', 'type':'radios', 'label':'Sex',
+                    'choices':[('F', 'Female'), ('M', 'Male')]},
+                {'name':'radios2', 'type':'radios', 'label':'Sex',
+                    'choices':[('F', 'Female'), ('M', 'Male')], 'inline':True},
+                {'name':'checkboxes1', 'type':'checkboxes', 'label':'Sex',
+                    'choices':[('F', 'Female'), ('M', 'Male')]},
+                {'name':'checkboxes2', 'type':'checkboxes', 'label':'Sex',
+                    'choices':[('F', 'Female'), ('M', 'Male')], 'inline':True},
+                {'name':'lines', 'type':'lines', 'label':'Lines'},
+                {'name':'desc', 'type':'text', 'label':'Description'},
+            ],
+            'layout_class':'bs3',
+            'layout':{},
+        }
+        return f
+
+    def _run_form(self, form, menu_id, desc):
+        from uliweb import request
+
+        result = {
+            'form':form,
+            'menu_id':menu_id,
+            'desc':desc,
+            'success':None
+        }
+        if request.method == 'GET':
+            return result
+        else:
+            if form.validate(request.values, request.files):
+                result['success'] = 'success'
+                print '====== form =', form.data, form.errors
+                return result
+            else:
+                result['success'] = 'error'
+                return result
+
+    def bs3vform(self):
+        from uliweb.form import make_form
+
+
+        f = self._make_form()
+        form_cls = make_form(**f)
+        form = form_cls()
+
+        response.template = 'LibraryDemoView/bs3form.html'
+        return self._run_form(form, 'vform', 'Vertical form')
+
+    def bs3hform(self):
+        from uliweb.form import make_form
+
+
+        f = self._make_form()
+        f['layout_class'] = 'bs3h'
+        form_cls = make_form(**f)
+        form = form_cls()
+
+        response.template = 'LibraryDemoView/bs3form.html'
+        return self._run_form(form, 'hform', 'Horizontal form')
+
+
+    def _get_layout(self):
+        return [
+            '-- Basic --',
+
+            ['str', 'password'],
+            ['int', 'float'],
+
+            '-- Extend --',
+
+            ['bool', 'date', 'datetime', 'time'],
+
+            [{'name':'list'}, {'name':'select1', 'colspan':2}],
+            {'name':'select2'},
+
+
+        ]
+
+    def bs3layout(self):
+        from uliweb.form import make_form
+
+
+        f = self._make_form()
+        f['layout_class'] = 'bs3'
+        f['layout']['rows'] = self._get_layout()
+        form_cls = make_form(**f)
+        form = form_cls()
+
+        response.template = 'LibraryDemoView/bs3form.html'
+        return self._run_form(form, 'form_layout', 'Form Layout')
+
+    def bs3hlayout(self):
+        from uliweb.form import make_form
+
+
+        f = self._make_form()
+        f['layout_class'] = 'bs3h'
+        f['layout']['rows'] = self._get_layout()
+        form_cls = make_form(**f)
+        form = form_cls()
+
+        response.template = 'LibraryDemoView/bs3form.html'
+        return self._run_form(form, 'form_hlayout', 'Form Horizontal Layout')
+

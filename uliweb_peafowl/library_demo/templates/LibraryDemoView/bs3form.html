@@ -1,0 +1,35 @@
+{{extend "admin_layout.html"}}
+
+
+{{block sidemenu}}
+    {{<< functions.menu('ADMIN', 'library_demo/bs3form/%s' % menu_id)}}
+{{end}}
+
+{{block sidebar_page_title}}
+    {{=_('Bootstrap3 Form')}}
+{{end}}
+
+{{block sidebar_page_subtitle}}
+{{end}}
+
+{{block custom_css}}
+{{end}}
+
+{{block sidebar_breadcrumb}}
+<ol class="breadcrumb">
+    <li><a href="/"><i class="fa fa-dashboard"></i>{{=_('Home')}}</a></li>
+    <li><a href="{{=ADMIN_URL}}">{{=_('Admin')}}</a></li>
+    <li class="active">{{=_('Bootstrap3 Form')}}</li>
+</ol>
+{{end}}
+
+{{block main_content}}
+<p class="alert alert-success">{{=desc}}</p>
+{{if success == 'success':}}
+<p class="alert alert-success">Success</p>
+{{elif success == 'error':}}
+<p class="alert alert-danger">Error</p>
+{{pass}}
+{{<< form}}
+
+{{end}}

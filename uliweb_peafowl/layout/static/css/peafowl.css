@@ -29,7 +29,7 @@
 #peafowl-body .narrow-bottom {padding-bottom:5px;}
 
 .cursor-pointer {cursor:pointer;}
-.checkbox, .radio {padding-left:15px;}
+.form-horizontal .checkbox, .form-horizontal .radio {padding-left:20px;}
 
 
 /* form related */
