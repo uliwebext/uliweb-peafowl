@@ -32,6 +32,10 @@ class Bootstrap3_Build(object):
         else:
             value = obj.data
 
+        td = kwargs.pop('td', None)
+        if td:
+            return self.to_td(form, field, obj, value, attrs, label_width, **kwargs)
+
         if not label_width:
             return self.default_html(form, field, obj, value, attrs, **kwargs)
         else:
@@ -60,6 +64,13 @@ class Bootstrap3_Build(object):
 
     def to_static(self, form, field, obj, value, attrs, label_width, **kwargs):
         return '<p class="form-control-static">%s</p>' % self.get_static_value(value, **kwargs)
+
+    def to_td(self, form, field, obj, value, attrs, label_width, **kwargs):
+        if field.static:
+            v = self.get_static_value(value, **kwargs) or ''
+        else:
+            v = self.to_html(form, field, obj, value, attrs, label_width, **kwargs)
+        return field.get_label(_class="table-label") + v
 
     def get_static_value(self, value, **kwargs):
         static_value = kwargs.get('static_value', value)
@@ -123,9 +134,9 @@ class Bootstrap3_Checkbox(Bootstrap3_Build):
             return static_value
         else:
             if value:
-                cls = 'glyphicon glyphicon-check'
+                cls = 'glyphicon glyphicon-ok'
             else:
-                cls = 'glyphicon glyphicon-unchecked'
+                cls = 'glyphicon glyphicon-removed'
         return '<i class="%s"></i>' % cls
 
 class Bootstrap3_Select(Bootstrap3_Build):
@@ -200,6 +211,7 @@ fields_mapping = {
     'datetime':Bootstrap3_String,
 }
 class Bootstrap3Layout(Layout):
+    use_table = False
 
     def init(self):
         if not self.layout:
@@ -213,6 +225,11 @@ class Bootstrap3Layout(Layout):
             raise Exception("layout is not the right data type")
 
         self.label_width = 0
+
+        #process readonly
+        if self.layout.get('readonly'):
+            for name, f in self.form.fields_list:
+                f.static = True
 
     def begin(self):
         if not self.form.html_attrs['class'] and self.layout.get('form_class'):
@@ -237,13 +254,25 @@ class Bootstrap3Layout(Layout):
 
         b = Buf()
         if columns_num == 1:
-            b << result[0][1]
+            if self.use_table:
+                with b.tr:
+                    with b.td(colspan=12):
+                        b << result[0][1]
+            else:
+                b << result[0][1]
         else:
-            with b.div(_class="row"):
-                for width, r in result:
-                    col_cls = 'col-sm-%d' % (width * 12 / total_width)
-                    with b.div(_class=col_cls):
-                        b << r
+            if self.use_table:
+                with b.tr:
+                    for width, r in result:
+                        span = width * 12 / total_width
+                        with b.td(colspan=span, width='%d%%' % (width *100/12)):
+                            b << r
+            else:
+                with b.div(_class="row"):
+                    for width, r in result:
+                        col_cls = 'col-sm-%d' % (width * 12 / total_width)
+                        with b.div(_class=col_cls):
+                            b << r
         return str(b)
 
     def get_build(self, field):
@@ -280,18 +309,26 @@ class Bootstrap3Layout(Layout):
                 continue
 
             build = self.get_build(field)
-            r.append(build.html(self.form, field, label_width=label_width, **kwargs))
+            r.append(build.html(self.form, field, label_width=label_width,
+                                    td=self.use_table, **kwargs))
             if name in self.form.errors:
                 error = True
-        col_cls = 'form-group'
-        if error:
-            col_cls = col_cls + ' has-error'
-        if obj:
-            _id = 'div_' + obj.id
+
+        if self.use_table:
+            with buf.div:
+                buf << ''.join(r)
+
         else:
-            _id = None
-        with buf.div(_class=col_cls, id=_id):
-            buf << ''.join(r)
+            col_cls = 'form-group'
+            if error:
+                col_cls = col_cls + ' has-error'
+            if obj:
+                _id = 'div_' + obj.id
+            else:
+                _id = None
+            with buf.div(_class=col_cls, id=_id):
+                buf << ''.join(r)
+
         return col_width*12/columns_num, str(buf)
 
     def _buttons_line(self, buttons):
@@ -333,6 +370,8 @@ class Bootstrap3Layout(Layout):
         first = True
         fieldset = None
         title = None
+        table = None
+        table_class = self.layout.get('table_class', 'table table-bordered table-hover')
         for line in self.layout['rows']:
             if isinstance(line, (str, unicode)):
                 #process fieldset title
@@ -343,9 +382,20 @@ class Bootstrap3Layout(Layout):
                         buf << '<fieldset><legend>%s</legend>' % title
                         first = False
                     else:
+                        if self.use_table:
+                            buf << '</table>'
                         buf << '</fieldset><fieldset><legend>%s</legend>' % title
+
+                    if self.use_table:
+                        buf << '<table class="%s">' % table_class
+                        table = True
+
                 #process line
                 else:
+                    if self.use_table and not table:
+                        buf << '<table class="%s">' % table_class
+                        table = True
+
                     _line = [line]
                     buf << self.line(_line)
             else:
@@ -356,6 +406,9 @@ class Bootstrap3Layout(Layout):
                 else:
                     raise Exception("Layout row should be str, dict, tuple, or list, but %r found" % line)
                 buf << self.line(_line)
+
+        if table:
+            buf << '</table>'
         if fieldset:
             buf << '</fieldset>'
 
@@ -374,3 +427,5 @@ class Bootstrap3HLayout(Bootstrap3Layout):
         self.form.html_attrs['role'] = 'form'
         return self.form.form_begin
 
+class Bootstrap3TableLayout(Bootstrap3Layout):
+    use_table = True
