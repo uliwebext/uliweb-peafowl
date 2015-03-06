@@ -26,6 +26,7 @@ class Bootstrap3_Build(object):
             attrs['id'] = field.id
         attrs['name'] = fieldname
         attrs['class'] = (attrs.setdefault('class', '') + ' %s' % self.input_class).strip()
+        attrs['widget'] = attrs.get('widget') or field.type_name
 
         if form.ok:
             value = field.to_html(obj.data)
