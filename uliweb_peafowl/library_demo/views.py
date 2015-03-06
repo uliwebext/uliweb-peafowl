@@ -69,6 +69,18 @@ class LibraryDemoView(object):
         }
         return f
 
+    def _make_data(self):
+        return {
+            'str':'string',
+            'password':'password',
+            # 'hidden':'hidden',
+            'int':10,
+            'float':1.0,
+            'bool':True,
+            'date':'2010-10-12',
+
+        }
+
     def _run_form(self, form, menu_id, desc):
         from uliweb import request
 
@@ -127,7 +139,33 @@ class LibraryDemoView(object):
             [{'name':'list'}, {'name':'select1', 'colspan':2}],
             {'name':'select2'},
 
+            ['file', 'image'],
+            ['radios1', 'checkboxes1'],
+            ['radios2', 'checkboxes2'],
+            'lines',
+            'desc'
+        ]
 
+    def _get_layout2(self):
+        return [
+            '-- Basic --',
+
+            ['str', 'password'],
+            ['int', 'float'],
+
+            '-- Extend --',
+
+            ['bool', 'date'],
+            ['datetime', 'time'],
+
+            ['list', 'select1'],
+            {'name':'select2'},
+
+            ['file', 'image'],
+            ['radios1', 'checkboxes1'],
+            ['radios2', 'checkboxes2'],
+            'lines',
+            'desc'
         ]
 
     def bs3layout(self):
@@ -143,16 +181,19 @@ class LibraryDemoView(object):
         response.template = 'LibraryDemoView/bs3form.html'
         return self._run_form(form, 'form_layout', 'Form Layout')
 
-    def bs3hlayout(self):
+    def bs3tlayout(self):
         from uliweb.form import make_form
 
 
         f = self._make_form()
-        f['layout_class'] = 'bs3h'
-        f['layout']['rows'] = self._get_layout()
+        f['layout_class'] = 'bs3table'
+        f['layout']['rows'] = self._get_layout2()
+        f['layout']['readonly'] = True
         form_cls = make_form(**f)
-        form = form_cls()
+
+        data = self._make_data()
+        form = form_cls(data=data)
 
         response.template = 'LibraryDemoView/bs3form.html'
-        return self._run_form(form, 'form_hlayout', 'Form Horizontal Layout')
+        return self._run_form(form, 'form_hlayout', 'Form Table Layout')
 
