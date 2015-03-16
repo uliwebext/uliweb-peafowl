@@ -29,12 +29,24 @@
 #peafowl-body .narrow-bottom {padding-bottom:5px;}
 
 .cursor-pointer {cursor:pointer;}
-.form-horizontal .checkbox, .form-horizontal .radio {padding-left:20px;}
 
+/* AdminLTE fix */
+.alert {margin-left:0;}
 
 /* form related */
 .form-group .field_required{color:red;}
 
 /* bs3 form helper */
-.table-label {min-width: 100px;display: inline-block;text-align: right;margin-right: 10px;
-font-weight:bold;margin-bottom:0;}
+.table-field-label {min-width: 100px;display: table-cell;text-align: right;margin-right: 10px;
+    /*vertical-align:top;*/
+    font-weight:bold;margin-bottom:0;padding-right:10px;}
+.table-layout .form-control-static  {display:inline-block;vertical-align:top;padding-top:0;padding-bottom:0;}
+.table-layout .form-control  {display:table-cell;vertical-align:top;}
+.table-field-content {display:table-row;width:100%;min-height:34px;line-height:34px;}
+.table-field-col {display:table-cell; width:2000px;}
+input[type="checkbox"].form-control {width:initial;margin:0;}
+.table-layout .checkbox input[type=checkbox],
+    .table-layout .checkbox-inline input[type=checkbox],
+    .table-layout .radio input[type=radio],
+    .table-layout .radio-inline input[type=radio] {position:initial;}
+.table-field-col .radio, .table-field-col .checkbox {margin-top:0;margin-bottom:0;}

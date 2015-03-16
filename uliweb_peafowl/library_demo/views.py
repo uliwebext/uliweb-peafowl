@@ -45,6 +45,7 @@ class LibraryDemoView(object):
                 {'name':'int', 'type':'int', 'label':'Integer'},
                 {'name':'float', 'type':'float', 'label':'Float'},
                 {'name':'bool', 'type':'bool', 'label':'Bool'},
+                {'name':'bool1', 'type':'bool', 'label':'Bool'},
                 {'name':'date', 'type':'date', 'label':'Date'},
                 {'name':'datetime', 'type':'datetime', 'label':'Datetime'},
                 {'name':'time', 'type':'time', 'label':'Time'},
@@ -70,6 +71,8 @@ class LibraryDemoView(object):
         return f
 
     def _make_data(self):
+        from uliweb.utils import date
+
         return {
             'str':'string',
             'password':'password',
@@ -77,7 +80,8 @@ class LibraryDemoView(object):
             'int':10,
             'float':1.0,
             'bool':True,
-            'date':'2010-10-12',
+            'date':date.to_date('2010-10-12'),
+            'desc':'<p>abc</p><p>cde</p>',
 
         }
 
@@ -134,7 +138,8 @@ class LibraryDemoView(object):
 
             '-- Extend --',
 
-            ['bool', 'date', 'datetime', 'time'],
+            ['bool', {'name':'bool1', 'inline':True}],
+            ['date', 'datetime', 'time'],
 
             [{'name':'list'}, {'name':'select1', 'colspan':2}],
             {'name':'select2'},
@@ -188,6 +193,22 @@ class LibraryDemoView(object):
         f = self._make_form()
         f['layout_class'] = 'bs3table'
         f['layout']['rows'] = self._get_layout2()
+        f['layout']['readonly'] = False
+        form_cls = make_form(**f)
+
+        data = self._make_data()
+        form = form_cls(data=data)
+
+        response.template = 'LibraryDemoView/bs3form.html'
+        return self._run_form(form, 'form_tlayout', 'Form Table Layout')
+
+    def bs3tlayout_readonly(self):
+        from uliweb.form import make_form
+
+
+        f = self._make_form()
+        f['layout_class'] = 'bs3table'
+        f['layout']['rows'] = self._get_layout2()
         f['layout']['readonly'] = True
         form_cls = make_form(**f)
 
@@ -195,5 +216,31 @@ class LibraryDemoView(object):
         form = form_cls(data=data)
 
         response.template = 'LibraryDemoView/bs3form.html'
-        return self._run_form(form, 'form_hlayout', 'Form Table Layout')
+        return self._run_form(form, 'form_tlayout_readonly', 'Form Table Layout Readonly')
 
+    def bs3layout2(self):
+        from uliweb.form import make_form
+
+
+        f = self._make_form()
+        f['layout_class'] = 'bs3'
+        f['layout']['rows'] = [
+            ['str', 'password'],
+            ['str', {'name':'password',
+                     'cols':[{'name':'password', 'attrs':{'style':'display:table-cell;padding-right:60px;'}},
+                                                '<a href="#" style="display:table-cell;position:absolute;right:20px;top:30px;">Forget</a>']},
+            ],
+            [{'name':'amount', 'label':'<label class="" for="exampleInputAmount">.</label>',
+              'cols':"""
+    <div class="input-group">
+      <div class="input-group-addon">$</div>
+      <input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount">
+      <div class="input-group-addon">.00</div>
+    </div>"""}, {'name':'password', 'attrs':{'disabled':True}}
+            ],
+        ]
+        form_cls = make_form(**f)
+        form = form_cls()
+
+        response.template = 'LibraryDemoView/bs3form.html'
+        return self._run_form(form, 'form_layout', 'Form Layout')

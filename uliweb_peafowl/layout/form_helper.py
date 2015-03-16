@@ -6,90 +6,179 @@ class Bootstrap3_Build(object):
     input_type = 'text'
     input_class = 'form-control'
 
-    def html(self, form, field, attrs=None, label_width=0, **kwargs):
-        """
-        form is Form instance
-        If label_width > 0, then the layout will be horizontal
-        """
+    def __init__(self, form, field, attrs=None, label_width=0, with_label=True, inline=False,
+                 dir='v', **kwargs):
         assert 0 <= label_width <= 12
 
-        attrs = copy.deepcopy(attrs or {})
+        self.form = form
         if isinstance(field, (str, unicode)):
             fieldname = field
-            obj = getattr(form, fieldname)
-            field = getattr(form.__class__, fieldname)
+            self.field = getattr(form.__class__, fieldname)
         else:
             fieldname = field.name
-            obj = getattr(form, fieldname)
+            self.field = field
 
-        if 'id' not in attrs:
-            attrs['id'] = field.id
-        attrs['name'] = fieldname
-        attrs['class'] = (attrs.setdefault('class', '') + ' %s' % self.input_class).strip()
-        attrs['widget'] = attrs.get('widget') or field.type_name
+        self.attrs = _attrs = copy.deepcopy(attrs or {})
+        if 'id' not in _attrs:
+            _attrs['id'] = field.id
+        _attrs['name'] = fieldname
+        _attrs['class'] = (_attrs.setdefault('class', '') + ' %s' % self.input_class).strip()
+        _attrs['widget'] = _attrs.get('widget') or field.type_name
+
+        self.label_width = label_width
+        self.kwargs = kwargs
+        self.with_label = with_label
+        self.inline = inline
+        self.dir = dir
+        self._label = kwargs.pop('label', field.label)
+        self.table_cell = kwargs.pop('table_cell', None)
 
         if form.ok:
-            value = field.to_html(obj.data)
+            self.value = field.to_html(self.form.data.get(fieldname, ''))
         else:
-            value = obj.data
+            self.value = self.form.data.get(fieldname, '')
 
-        td = kwargs.pop('td', None)
-        if td:
-            return self.to_td(form, field, obj, value, attrs, label_width, **kwargs)
-
-        if not label_width:
-            return self.default_html(form, field, obj, value, attrs, **kwargs)
+        if self.table_cell:
+            self.label = field.get_label(self._label, _class="table-field-label")
         else:
-            return self.default_horizontal_html(form, field, obj, value, attrs, label_width, **kwargs)
+            #horizontal
+            if dir == 'v':
+                self.label = field.get_label(self._label)
+            else:
+                self.label = field.get_label(self._label, _class="col-sm-%d control-label" % label_width)
+        self.content = self.to_html()
 
-    def default_html(self, form, field, obj, value, attrs, **kwargs):
-        return obj.label + self.to_html(form, field, obj, value, attrs, 0, **kwargs) + self.get_help_string(field)
+    def html(self):
+        return self.label + self.content
 
-    def default_horizontal_html(self, form, field, obj, value, attrs, label_width, **kwargs):
-        return (field.get_label(_class="col-sm-%d control-label" % label_width) +
-                '<div class="col-sm-%d">' % (12-label_width) +
-                self.to_html(form, field, obj, value, attrs, label_width, **kwargs) + '</div>')
-
-    def to_html(self, form, field, obj, value, attrs, label_width, **kwargs):
-        if field.static:
-            return self.to_static(form, field, obj, value, attrs, label_width, **kwargs)
+    def to_html(self):
+        if self.field.static:
+            return self.to_static()
         else:
-            return self.to_widget(form, field, obj, value, attrs, label_width, **kwargs)
+            return self.to_widget()
 
-    def to_widget(self, form, field, obj, value, attrs, label_width, **kwargs):
-        _attrs = to_attrs(attrs)
-        return '<input type="%s" value="%s"%s></input>' % (self.input_type, value, _attrs)
+    def to_widget(self):
+        _attrs = to_attrs(self.attrs)
+        return '<input type="%s" value="%s"%s></input>' % (self.input_type, self.value, _attrs)
 
-    def to_hidden(self, form, field, obj, value, attrs, **kwargs):
-        return '<input type="hidden" value="%s"></input>' % value
+    def to_hidden(self):
+        return '<input type="hidden" value="%s"></input>' % self.value
 
-    def to_static(self, form, field, obj, value, attrs, label_width, **kwargs):
-        return '<p class="form-control-static">%s</p>' % self.get_static_value(value, **kwargs)
+    def to_static(self):
+        cls = ''
+        if self.table_cell:
+            cls = ' table-field-content'
+        return '<div class="form-control-static%s">%s</div>' % (cls, self.get_static_value())
 
-    def to_td(self, form, field, obj, value, attrs, label_width, **kwargs):
-        if field.static:
-            v = self.get_static_value(value, **kwargs) or ''
-        else:
-            v = self.to_html(form, field, obj, value, attrs, label_width, **kwargs)
-        return field.get_label(_class="table-label") + v
-
-    def get_static_value(self, value, **kwargs):
-        static_value = kwargs.get('static_value', value)
+    def get_static_value(self):
+        static_value = self.kwargs.get('static_value', self.value)
         return static_value
 
-    def get_help_string(self, field):
-        if field.help_string:
-            return '<p class="help-block">%s</p>' % field.help_string
+    def get_help_string(self):
+        help_string = self.kwargs.get('help_string', '')
+        if not help_string and self.field and self.field.help_string:
+            help_string = self.field.help_string
+        if help_string:
+            return '<p class="help-block">%s</p>' % help_string
         else:
             return ''
+
+class Bootstrap3_Column(Bootstrap3_Build):
+    def __init__(self, form, col, label_width=0, dir='v', table_cell=False):
+        """
+        col should be html, fieldname, dict = {'name':'fieldname', 'label':, 'cols':}
+        """
+        self.form = form
+        self.label_width = label_width
+        self.dir = dir
+        self.field = None
+        self.error = False
+        self.label = ''
+        self.kwargs = {} if not isinstance(col, dict) else col
+        self.table_cell = table_cell
+
+        if isinstance(col, (str, unicode)):
+            if not col in self.form.fields:
+                self.content = col
+                self.name = ''
+                self.label = ''
+            else:
+                self.field = field = self.form.fields[col]
+                build = self.get_build(form, field, label_width=label_width, dir=self.dir,
+                                       table_cell=table_cell)
+                self.content = build.content
+                self.name = field.name
+                self.label = build.label
+        elif isinstance(col, dict):
+            kwargs = copy.deepcopy(col)
+            self.name = kwargs['name']
+            cols = kwargs.pop('cols', [])
+
+            if not isinstance(cols, (tuple, list)):
+                cols = [cols]
+            if not cols:
+                self.field = field = self.form.fields[self.name]
+                build = self.get_build(form, field, label_width=label_width, dir=self.dir,
+                                       table_cell=table_cell, **kwargs)
+                self.content = build.content
+                self.label = build.label
+            else:
+                result = []
+                for c in cols:
+                    b = self.__class__(form, c, label_width=label_width, dir=self.dir,
+                                       table_cell=table_cell)
+                    result.append(b.content)
+                    if b.name == self.name:
+                        self.label = b.label
+                        self.field = b.field
+                self.content = ''.join(result)
+
+        if self.field and self.form.errors.get(self.field.name):
+            self.error = True
+
+        if not self.label:
+            self.label = self.kwargs.get('label', '')
+
+    def get_build(self, form, field, label_width, **kwargs):
+        build_cls = fields_mapping[field.type_name]
+        build = build_cls(form, field, label_width=label_width, **kwargs)
+        return build
+
+    def html(self):
+        if self.table_cell:
+            return ('<div class="table-field-content">' + self.label +
+                    '<div class="table-field-col">' + self.content + '</div></div>')
+
+        if self.dir == 'v':
+            content = self.content
+        else:
+            content = ('<div class="col-sm-%d">' % (12-self.label_width) +
+                self.content + '</div>')
+
+        col_cls = 'form-group'
+        if self.error:
+            col_cls = col_cls + ' has-error'
+        if self.name:
+            _id = 'div_field_%s' % self.name
+        else:
+            _id = None
+
+        buf = Buf()
+        with buf.div(_class=col_cls, id=_id):
+            buf << self.label
+            buf << content
+            buf << self.get_help_string()
+
+        return str(buf)
+
 
 Bootstrap3_String = Bootstrap3_Build
 class Bootstrap3_Text(Bootstrap3_Build):
 
-    def to_widget(self, form, field, obj, value, attrs, label_width, **kwargs):
-        attrs['rows'] = getattr(field, 'rows', 4)
-        _attrs = to_attrs(attrs)
-        return '<textarea%s>%s</textarea>' % (_attrs, value)
+    def to_widget(self):
+        self.attrs['rows'] = getattr(self.field, 'rows', 4)
+        _attrs = to_attrs(self.attrs)
+        return '<textarea%s>%s</textarea>' % (_attrs, self.value)
 
 Bootstrap3_Lines = Bootstrap3_Text
 
@@ -103,38 +192,45 @@ class Bootstrap3_File(Bootstrap3_Build):
     input_type = 'file'
 
 class Bootstrap3_Checkbox(Bootstrap3_Build):
+    input_type = 'checkbox'
 
-    def to_widget(self, form, field, obj, value, attrs, label_width, **kwargs):
+    def to_widget(self):
+        value = self.value
+        field = self.field
+        attrs = self.attrs
+
         if value:
             attrs['checked'] = None
-        attrs.pop('class', None)
-        _attrs = to_attrs(attrs)
-        if label_width:
-            return '<div class="checkbox"><input type="checkbox"%s></input></div>' % _attrs
+        if field.inline:
+            attrs.pop('class', None)
+            _attrs = to_attrs(attrs)
+            if label_width:
+                return '<div class="checkbox"><input type="checkbox"%s></input></div>' % _attrs
+            else:
+                return '<input type="checkbox"%s>%s</input>' % (_attrs, self.kwargs.get('label') or field.label)
         else:
-            return '<input type="checkbox"%s>%s</input>' % (_attrs, kwargs.get('label') or field.label)
+            _attrs = to_attrs(attrs)
+            return '<input type="%s" %s></input>' % (self.input_type, _attrs)
 
-    def default_html(self, form, field, obj, value, attrs, **kwargs):
-        widget = self.to_html(form, field, obj, value, attrs, 0)
-        help_string = self.get_help_string(field)
-        if field.static:
-            return '<div class="checkbox">%s%s</div>' % (widget, help_string)
+    def default_html(self):
+        field = self.field
+
+        if field.inline:
+            widget = self.to_html()
+            help_string = self.get_help_string()
+            if field.static:
+                return '<div class="checkbox">%s%s</div>' % (widget, help_string)
+            else:
+                return '<div class="checkbox"><label>%s</label>%s</div>' % (widget, help_string)
         else:
-            return '<div class="checkbox"><label>%s</label>%s</div>' % (widget, help_string)
+            return super(Bootstrap3_Checkbox, self).default_html()
 
-    def to_static(self, form, field, obj, value, attrs, label_width, **kwargs):
-        staic_value = self.get_static_value(value, **kwargs)
-        if label_width:
-            return '<p class="form-control-static">%s</p>' % staic_value
-        else:
-            return '<p class="form-control-static">%s %s</p>' % (staic_value, field.label)
-
-    def get_static_value(self, value, **kwargs):
-        static_value = kwargs.get('static_value', None)
+    def get_static_value(self):
+        static_value = self.kwargs.get('static_value', None)
         if static_value:
             return static_value
         else:
-            if value:
+            if self.value:
                 cls = 'glyphicon glyphicon-ok'
             else:
                 cls = 'glyphicon glyphicon-removed'
@@ -142,8 +238,11 @@ class Bootstrap3_Checkbox(Bootstrap3_Build):
 
 class Bootstrap3_Select(Bootstrap3_Build):
 
-    def to_widget(self, form, field, obj, value, attrs, label_width, **kwargs):
+    def to_widget(self):
         from uliweb.form.widgets import Select
+
+        field = self.field
+        attrs = self.attrs
 
         choices = field.get_choices()[:]
         if (field.empty is not None) and (not field.multiple):
@@ -160,19 +259,22 @@ class Bootstrap3_Select(Bootstrap3_Build):
                     else:
                         choices.insert(0, ('', field.empty))
 
-        return str(Select(choices, obj.data, multiple=field.multiple, size=field.size, **attrs))
+        return str(Select(choices, self.form.data.get(field.name), multiple=field.multiple, size=field.size, **attrs))
 
 class Bootstrap3_Radios(Bootstrap3_Build):
     input_type = 'radio'
 
-    def to_widget(self, form, field, obj, value, attrs, label_width, **kwargs):
+    def to_widget(self):
         """
         """
         from uliweb.form.widgets import Select
         from uliweb.utils.common import safe_str
 
+        field = self.field
+        attrs = self.attrs
+
         buf = Buf()
-        _value = [safe_str(x) for x in obj.data or []]
+        _value = [safe_str(x) for x in (self.form.data.get(field.name) or [])]
         for i, (v, title) in enumerate(field.get_choices()):
             _attrs = copy.deepcopy(attrs)
             if safe_str(v) in _value:
@@ -213,10 +315,11 @@ fields_mapping = {
 }
 class Bootstrap3Layout(Layout):
     use_table = False
+    dir = 'v'
 
     def init(self):
         if not self.layout:
-            self.layout = {'rows':[name for name, obj in self.form.fields_list]}
+            self.layout = {'rows':[name for name, obj in self.form.fields_list if not self.is_hidden(obj)]}
         elif isinstance(self.layout, list):
             self.layout = {'rows':self.layout}
         elif isinstance(self.layout, dict):
@@ -243,13 +346,15 @@ class Bootstrap3Layout(Layout):
         columns_num = len(line)
         total_width = 0
         for f in line:
-            if isinstance(f, (str, unicode, dict)):
-                cols = [f]
+            if isinstance(f, (str, unicode)):
+                col = {'name':f}
+            elif isinstance(f, dict):
+                col = f
             elif isinstance(f, (tuple, list)):
-                cols = f
+                col = {'name':'', 'cols':f}
             else:
                 raise Exception("layout line should be string, list or dict, but %r found" % f)
-            width, r = self.process_column(cols, columns_num)
+            width, r = self.process_column(col, columns_num)
             total_width += width
             result.append((width, r))
 
@@ -277,60 +382,13 @@ class Bootstrap3Layout(Layout):
         return str(b)
 
     def get_build(self, field):
-        return fields_mapping[field.type_name]()
+        return fields_mapping[field.type_name]
 
-    def process_column(self, cols, columns_num):
-        r = []
-        label_width = self.label_width
-        error = False
-        buf = Buf()
-        obj = None
-        for f in cols:
-            col_width = 1
-            if isinstance(f, (str, unicode)):
-                if f not in self.form.fields:
-                    r.append(f)
-                    continue
-                else:
-                    name = f
-                    kwargs = {}
-            elif isinstance(f, dict):
-                kwargs = f.copy()
-                name = kwargs.pop('name')
-                col_width = kwargs.pop('colspan', 1)
-                #todo add text support
-            else:
-                raise Exception("Not support layout data type for %r" % f)
-
-            field = self.form.fields[name]
-            #first field will be obj, and the column id will be the first field object
-            if not obj:
-                obj = field
-            if self.is_hidden(field):
-                continue
-
-            build = self.get_build(field)
-            r.append(build.html(self.form, field, label_width=label_width,
-                                    td=self.use_table, **kwargs))
-            if name in self.form.errors:
-                error = True
-
-        if self.use_table:
-            with buf.div:
-                buf << ''.join(r)
-
-        else:
-            col_cls = 'form-group'
-            if error:
-                col_cls = col_cls + ' has-error'
-            if obj:
-                _id = 'div_' + obj.id
-            else:
-                _id = None
-            with buf.div(_class=col_cls, id=_id):
-                buf << ''.join(r)
-
-        return col_width*12/columns_num, str(buf)
+    def process_column(self, col, columns_num):
+        col_width = col.pop('colspan', 1)
+        build = Bootstrap3_Column(self.form, col, label_width=self.label_width,
+                                  dir=self.dir, table_cell=self.use_table)
+        return col_width*12/columns_num, build.html()
 
     def _buttons_line(self, buttons):
         button_offset = self.layout.get('button_offset', self.label_width)
@@ -372,7 +430,7 @@ class Bootstrap3Layout(Layout):
         fieldset = None
         title = None
         table = None
-        table_class = self.layout.get('table_class', 'table table-bordered table-hover')
+        table_class = self.layout.get('table_class', 'table table-bordered table-hover table-layout')
         for line in self.layout['rows']:
             if isinstance(line, (str, unicode)):
                 #process fieldset title
@@ -415,6 +473,7 @@ class Bootstrap3Layout(Layout):
 
 
 class Bootstrap3HLayout(Bootstrap3Layout):
+    dir = 'h'
 
     def init(self):
         super(Bootstrap3HLayout, self).init()
