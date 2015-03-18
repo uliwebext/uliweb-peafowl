@@ -39,7 +39,7 @@ class LibraryDemoView(object):
     def _make_form(self):
         f = {
             'fields':[
-                {'name':'str', 'type':'str', 'label':'String', 'required':True},
+                {'name':'str', 'type':'str', 'label':'String', 'required':True, 'help_string':'help string', 'placeholder':'password'},
                 {'name':'password', 'type':'password', 'label':'Password'},
                 {'name':'hidden', 'type':'hidden', 'label':'Hidden'},
                 {'name':'int', 'type':'int', 'label':'Integer'},
@@ -57,16 +57,24 @@ class LibraryDemoView(object):
                 {'name':'radios1', 'type':'radios', 'label':'Sex',
                     'choices':[('F', 'Female'), ('M', 'Male')]},
                 {'name':'radios2', 'type':'radios', 'label':'Sex',
-                    'choices':[('F', 'Female'), ('M', 'Male')], 'inline':True},
+                    'choices':[('F', 'Female'), ('M', 'Male')]},
                 {'name':'checkboxes1', 'type':'checkboxes', 'label':'Sex',
                     'choices':[('F', 'Female'), ('M', 'Male')]},
                 {'name':'checkboxes2', 'type':'checkboxes', 'label':'Sex',
-                    'choices':[('F', 'Female'), ('M', 'Male')], 'inline':True},
+                    'choices':[('F', 'Female'), ('M', 'Male')]},
                 {'name':'lines', 'type':'lines', 'label':'Lines'},
                 {'name':'desc', 'type':'text', 'label':'Description'},
             ],
-            'layout_class':'bs3',
-            'layout':{},
+            'layout_class':'bs3v',
+            'layout':{
+                'fields': {
+                    'radios2':{'inline':True},
+                    'checkboxes2':{'inline':True},
+                    'bool1':{'inline':True, 'label':''},
+                    'int':{'format':lambda x, all:20},
+                },
+
+            },
         }
         return f
 
@@ -80,7 +88,17 @@ class LibraryDemoView(object):
             'int':10,
             'float':1.0,
             'bool':True,
+            'list':[u'中', u'文'],
+            'select1':'F',
+            'select2':['F', 'M'],
+            'radios1':'F',
+            'radios2':'M',
+            'checkboxes1':['F'],
+            'checkboxes2':['F', 'M'],
             'date':date.to_date('2010-10-12'),
+            'datetime':date.to_datetime('2010-10-12 13:23:45'),
+            'time':date.to_time('13:23:45'),
+
             'desc':'<p>abc</p><p>cde</p>',
 
         }
@@ -138,7 +156,7 @@ class LibraryDemoView(object):
 
             '-- Extend --',
 
-            ['bool', {'name':'bool1', 'inline':True}],
+            ['bool', {'name':'bool1', 'inline':True, 'label':''}],
             ['date', 'datetime', 'time'],
 
             [{'name':'list'}, {'name':'select1', 'colspan':2}],
@@ -160,10 +178,10 @@ class LibraryDemoView(object):
 
             '-- Extend --',
 
-            ['bool', 'date'],
-            ['datetime', 'time'],
+            ['bool', {'name':'bool1', 'inline':True, 'label':''}],
+            ['date', 'datetime', 'time'],
 
-            ['list', 'select1'],
+            [{'name':'list'}, {'name':'select1', 'colspan':2}],
             {'name':'select2'},
 
             ['file', 'image'],
@@ -178,7 +196,7 @@ class LibraryDemoView(object):
 
 
         f = self._make_form()
-        f['layout_class'] = 'bs3'
+        f['layout_class'] = 'bs3v'
         f['layout']['rows'] = self._get_layout()
         form_cls = make_form(**f)
         form = form_cls()
@@ -191,7 +209,7 @@ class LibraryDemoView(object):
 
 
         f = self._make_form()
-        f['layout_class'] = 'bs3table'
+        f['layout_class'] = 'bs3t'
         f['layout']['rows'] = self._get_layout2()
         f['layout']['readonly'] = False
         form_cls = make_form(**f)
@@ -207,7 +225,7 @@ class LibraryDemoView(object):
 
 
         f = self._make_form()
-        f['layout_class'] = 'bs3table'
+        f['layout_class'] = 'bs3t'
         f['layout']['rows'] = self._get_layout2()
         f['layout']['readonly'] = True
         form_cls = make_form(**f)
@@ -223,12 +241,23 @@ class LibraryDemoView(object):
 
 
         f = self._make_form()
-        f['layout_class'] = 'bs3'
+        f['layout_class'] = 'bs3v'
         f['layout']['rows'] = [
-            ['str', 'password'],
             ['str', {'name':'password',
-                     'cols':[{'name':'password', 'attrs':{'style':'display:table-cell;padding-right:60px;'}},
-                                                '<a href="#" style="display:table-cell;position:absolute;right:20px;top:30px;">Forget</a>']},
+                     'cols':[{'name':'password', 'attrs':{'style':'display:initial;'},
+                                'wrap':['<div style="display:table-cell;margin-right:10px;width:1000px;">', '</div>']},
+                                '<a href="#" style="display:table-cell;padding-left:10px;">Forget</a>'],
+                    },
+            ],
+            ['str', {'name':'password',
+                     'label':'<label>Password:</label>',
+                     'cols':'''<div style="display:table-row">
+                     <div style='display:table-cell;margin-right:10px;width:1000px;'>
+                        <input type="password" value="" id="field_password" name="password" style="width:100%;height:34px;" widget="password">
+                     </div>
+                     <a href='#' style="display:table-cell;padding-left:10px;">Forget</a>
+                     </div>'''
+                    },
             ],
             [{'name':'amount', 'label':'<label class="" for="exampleInputAmount">.</label>',
               'cols':"""
@@ -243,4 +272,30 @@ class LibraryDemoView(object):
         form = form_cls()
 
         response.template = 'LibraryDemoView/bs3form.html'
-        return self._run_form(form, 'form_layout', 'Form Layout')
+        return self._run_form(form, 'form_layout2', 'Form Layout')
+
+    def bs3login(self):
+        from uliweb.form import make_form
+
+        f = {
+            'fields':[
+                {'name':'username', 'type':'str', 'label':u'用户名', 'placeholder':u'用户名'},
+                {'name':'password', 'type':'password', 'label':u'密码', 'placeholder':u'密码'},
+                {'name':'remember_me', 'type':'bool', 'label':u'记住我'},
+            ],
+            'layout_class':'bs3h',
+            'layout':{
+                'rows':[
+                    'username',
+                    'password',
+                    {'name':'remember_me', 'inline':True, 'label':''},
+                ],
+                'buttons':[u'<button type="submit" class="btn btn-primary">提交</button>', '<a href="#">忘记密码</a>']
+            }
+        }
+
+        form_cls = make_form(**f)
+        form = form_cls()
+
+        response.template = 'LibraryDemoView/bs3form.html'
+        return self._run_form(form, 'form_login', 'Form Login')
