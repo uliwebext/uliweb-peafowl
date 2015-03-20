@@ -9,6 +9,7 @@ introduction.md
 {% toc max_depth=1 %}
 dev/getstart.md
 dev/admin.md
+dev/form_helper.md
 {% endtoc %}
 
 ## 变更说明

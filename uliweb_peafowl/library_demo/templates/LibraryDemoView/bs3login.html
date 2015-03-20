@@ -1,0 +1,50 @@
+{{extend "LibraryDemoView/bs3form.html"}}
+
+{{block extend}}
+<script>
+var errors = {{<< json_dumps(form.errors)}};
+var handleSubmit = function(target) {
+    require(['jqvalidation'], function(){
+        var form = $(target);
+        var validator = form.validate({
+            errorElement : 'span',
+            errorClass : 'help-block',
+            focusInvalid : true,
+            rules:{{=json_dumps(form.front_rules['rules'])}},
+            messages:{{=json_dumps(form.front_rules['messages'])}},
+            highlight : function(element) {
+                $(element).closest('.form-group').addClass('has-error');
+            },
+
+            success : function(label) {
+                label.closest('.form-group').removeClass('has-error');
+                label.remove();
+            },
+
+            errorPlacement : function(error, element) {
+                element.parent('div').append(error);
+            },
+
+            submitHandler : function(form) {
+                form.submit();
+            }
+        });
+        if (!$.isEmptyObject(errors)){
+            validator.showErrors(errors);
+        }
+
+/*        form.find('input').keypress(function(e) {
+            if (e.which == 13) {
+                if (form.validate().form()) {
+                    form.submit();
+                }
+                return false;
+            }
+        });
+*/
+    });
+}
+
+handleSubmit('#login_form');
+</script>
+{{end}}

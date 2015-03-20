@@ -15,7 +15,9 @@ class LibraryDemoView(object):
     def webui_popover_dialog(self):
         import uliweb.form as form
         class MyForm(form.Form):
-            name = form.StringField(required=True)
+            layout_class = 'bs3h'
+
+            name = form.StringField('String', required=True)
 
             def post_html(self):
                 return """<script>
@@ -103,7 +105,7 @@ class LibraryDemoView(object):
 
         }
 
-    def _run_form(self, form, menu_id, desc):
+    def _run_form(self, form, menu_id, desc, ajax=False):
         from uliweb import request
 
         result = {
@@ -118,10 +120,16 @@ class LibraryDemoView(object):
             if form.validate(request.values, request.files):
                 result['success'] = 'success'
                 print '====== form =', form.data, form.errors
-                return result
+                if ajax:
+                    return json({'success':True})
+                else:
+                    return result
             else:
-                result['success'] = 'error'
-                return result
+                if ajax:
+                    return json({'success':False, 'errors':form.errors})
+                else:
+                    result['success'] = 'error'
+                    return result
 
     def bs3vform(self):
         from uliweb.form import make_form
@@ -274,9 +282,7 @@ class LibraryDemoView(object):
         response.template = 'LibraryDemoView/bs3form.html'
         return self._run_form(form, 'form_layout2', 'Form Layout')
 
-    def bs3login(self):
-        from uliweb.form import make_form
-
+    def get_login_form(self):
         f = {
             'fields':[
                 {'name':'username', 'type':'str', 'label':u'用户名', 'placeholder':u'用户名'},
@@ -285,17 +291,44 @@ class LibraryDemoView(object):
             ],
             'layout_class':'bs3h',
             'layout':{
+                'label_width':3,
                 'rows':[
                     'username',
                     'password',
                     {'name':'remember_me', 'inline':True, 'label':''},
                 ],
-                'buttons':[u'<button type="submit" class="btn btn-primary">提交</button>', '<a href="#">忘记密码</a>']
-            }
+                'buttons':[u'<button type="submit" class="btn btn-primary">提交</button>',
+                           '<a href="#">忘记密码</a>'],
+                'error':False,
+            },
+            'rules':{
+                'username':{
+                    'required':True,
+                    'minlength:end':6,
+                },
+                'password':{
+                    'required':True,
+                }
+            },
+
         }
 
-        form_cls = make_form(**f)
-        form = form_cls()
+        return f
 
-        response.template = 'LibraryDemoView/bs3form.html'
+    def bs3login(self):
+        from uliweb.form import make_form
+
+        f = self.get_login_form()
+        form_cls = make_form(**f)
+        form = form_cls(id='login_form')
+
         return self._run_form(form, 'form_login', 'Form Login')
+
+    def bs3login_ajax(self):
+        from uliweb.form import make_form
+
+        f = self.get_login_form()
+        form_cls = make_form(**f)
+        form = form_cls(id='login_form')
+
+        return self._run_form(form, 'form_login_ajax', 'Form Login Ajax', ajax=True)
