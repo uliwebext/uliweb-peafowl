@@ -37,7 +37,8 @@ requirejs.config({
         "jqvalidation_zh"  : '_jquery.validation/localization/messages_zh.min',
 //        "bootstrapvalidator": '_bootstrapvalidator/bootstrapValidator.min',
         "bootstrap-dialog": '_bootstrap3.dialog/bootstrap-dialog.min',
-        "popover"          : '_webui_popover/jquery.webui-popover.min'
+        "popover"          : '_webui_popover/jquery.webui-popover.min',
+        "webuploader"      : '_webuploader/webuploader.nolog.min',
     },
     "shim": {
         "mmgrid": {
@@ -77,6 +78,9 @@ requirejs.config({
         },
         "popover":{
             deps: ['css!_webui_popover/jquery.webui-popover.min']
+        },
+        "webuploader":{
+            deps: ['css!_webuploader/webuploader.css']
         }
     },
     urlArgs: get_static_version()
