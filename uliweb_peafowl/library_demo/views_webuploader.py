@@ -18,6 +18,7 @@ def fileupload():
     flag = form.validate(request.values, request.files)
     if flag:
         filename = functions.save_file_field(form.filename)
+        print request.values, request.files
         url = functions.get_href(filename)
         return json({'success':True, 'filename':filename, 'url':url})
     else:
