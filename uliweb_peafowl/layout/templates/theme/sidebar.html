@@ -14,14 +14,14 @@
 
 {{block content}}
 
-{{block before_topbar}}{{end}}
-{{block topbar}}
-    {{include "theme/include/sidebar/inc_topbar.html"}}
-{{end}}
-{{block after_topbar}}{{end}}
+<div class="wrapper">
 
+    {{block before_topbar}}{{end}}
+    {{block topbar}}
+        {{include "theme/include/sidebar/inc_topbar.html"}}
+    {{end}}
+    {{block after_topbar}}{{end}}
 
-<div class="wrapper row-offcanvas row-offcanvas-left">
     {{block before_sidebar}}{{end}}
     {{block sidebar}}
         {{include "theme/include/sidebar/inc_sidebar.html"}}
@@ -33,7 +33,14 @@
         {{include "theme/include/sidebar/inc_container.html"}}
     {{end}}
     {{block after_container}}{{end}}
+
+    {{block before_footer}}{{end}}
+    {{block footer}}
+    {{end}}
+    {{block after_footer}}{{end}}
+
 </div>
+
 
 {{block initpage_script}}
 {{end}}
