@@ -52,3 +52,6 @@ input[type="checkbox"].form-control {width:initial;margin:0;}
 .table-field-col .radio, .table-field-col .checkbox {margin-top:0;margin-bottom:0;}
 input[type="file"].form-control {border:none;background-color:transparent;line-height:1;padding:8px 1px; }
 .table-field-col input[type="file"] {padding:1px;height:initial;}
+
+/* webui popover fix */
+.webui-popover-content .form-group {margin-left:0;margin-right:0;}

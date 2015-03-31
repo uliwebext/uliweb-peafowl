@@ -69,10 +69,10 @@ class Bootstrap3_Build(object):
 
     def to_widget(self):
         _attrs = to_attrs(self.attrs)
-        return '<input type="%s" value="%s"%s></input>' % (self.input_type, self.html_value, _attrs)
+        return '<input type="%s" value="%s"%s></input>' % (self.input_type, safe_str(self.html_value), _attrs)
 
     def to_hidden(self):
-        return '<input type="hidden" value="%s"></input>' % self.html_value
+        return '<input type="hidden" value="%s"></input>' % safe_str(self.html_value)
 
     def to_static(self):
         cls = ''
@@ -165,7 +165,7 @@ class Bootstrap3_Column(Bootstrap3_Build):
 
         if self.field:
             self.error_msg = self.form.errors.get(self.field.name, '')
-            if self.error_msg:
+            if self.error_msg and layout['error']:
                 self.error = True
 
         if not self.label:
@@ -369,6 +369,9 @@ class Bootstrap3VLayout(Layout):
         if self.layout.get('readonly'):
             for name, f in self.form.fields_list:
                 f.static = True
+
+        #process error display
+        self.layout['error'] = self.layout.get('error', True)
 
     def begin(self):
         if not self.form.html_attrs['class'] and self.layout.get('form_class'):
