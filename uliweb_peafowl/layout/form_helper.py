@@ -249,6 +249,7 @@ class Bootstrap3_Checkbox(Bootstrap3_Build):
             _attrs = to_attrs(attrs)
             return '<label class="checkbox-inline"><input type="checkbox"%s></input> %s</label>' % (_attrs, self.field.label)
         else:
+            attrs['class'] = 'checkbox'
             _attrs = to_attrs(attrs)
             return '<input type="%s" %s></input>' % (self.input_type, _attrs)
 
