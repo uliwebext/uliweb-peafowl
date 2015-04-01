@@ -146,7 +146,7 @@
             // 显示已上传
             //$( '#'+file.id ).find('.state').text('已上传');
             // 显示删除标志
-            $( '#'+file.id ).find('.state').html('<a href="/library_demo/fileupload?filename=' + data.filename + '">删除</a>');
+            $( '#'+file.id ).find('.state').html('<a href="/library_demo/filedelete/' + data.filename + '" class="deleteFile">删除</a>');
         });
 
         uploader.on( 'uploadError', function( file, reason ) {
@@ -160,6 +160,7 @@
         uploader.on('uploadAccept', function(obj, ret, f){
             //f('出错信息测试');
             //return false;
+            //console.log('uploadAccept', ret);
         });
 
         $btn.on('click', function () {
@@ -168,6 +169,18 @@
             } else {
                 uploader.upload();
             }
+        });
+
+        $('body').on('click', '.deleteFile', function(e){
+            e.preventDefault();
+            var that = $(this);
+            var href = that.attr('href');
+            $.post(href).success(function(r){
+                if(r.success){
+                    var p = $(that.parents('div.item')[0]);
+                    p.remove();
+                }
+            });
         });
 
     });

@@ -1,5 +1,8 @@
 #coding=utf8
 from uliweb import expose, functions
+import logging
+
+log = logging.getLogger(__name__)
 
 @expose('/library_demo/webuploader')
 def webuploader():
@@ -25,3 +28,11 @@ def fileupload():
         #如果校验失败，则再次返回Form，将带有错误信息
         return json({'success':False, 'errors':form.errors})
 
+@expose('/library_demo/filedelete/<path:filename>')
+def filedelete(filename):
+    try:
+        functions.delete_filename(filename)
+        return json({'success':True, 'message':'Delete success.'})
+    except Exception as e:
+        log.exception(e)
+        return json({'success':False, 'message':'Delete file error'})
