@@ -9,6 +9,9 @@ class LibraryDemoView(object):
     def iconsheet(self):
         return {}
 
+    def toastr(self):
+        return {}
+
     def webui_popover(self):
         return {}
 
@@ -261,7 +264,7 @@ class LibraryDemoView(object):
                      'label':'<label>Password:</label>',
                      'cols':'''<div style="display:table-row">
                      <div style='display:table-cell;margin-right:10px;width:1000px;'>
-                        <input type="password" value="" id="field_password" name="password" style="width:100%;height:34px;" widget="password">
+                        <input class='form-control' type="password" value="" id="field_password" name="password" style="width:100%;height:34px;" widget="password">
                      </div>
                      <a href='#' style="display:table-cell;padding-left:10px;">Forget</a>
                      </div>'''

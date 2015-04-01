@@ -28,17 +28,18 @@ requirejs.config({
         "mmpaginator"      : '_mmgrid/mmPaginator',
         "mmtreegrid"       : '_mmgrid/mmTreeGrid',
         "select2"          : '_select2/select2',
-        "jqdialog2"        : 'jquery.dialog2/jquery.dialog2',
-        "jqdialog2-helper" : "jquery.dialog2/jquery.dialog2.helpers",
         "adminLTE"         : "app/adminLTE",
         "pnotify"          : '_pnotify/pnotify.min',
-        "jqvalidation"     : '_jquery.validation/jquery.validate.min',
-        "../jquery.validate.min"     : '_jquery.validation/jquery.validate.min',
-        "jqvalidation_zh"  : '_jquery.validation/localization/messages_zh.min',
-//        "bootstrapvalidator": '_bootstrapvalidator/bootstrapValidator.min',
-        "bootstrap-dialog": '_bootstrap3.dialog/bootstrap-dialog.min',
+        "bootstrap-dialog" : '_bootstrap3.dialog/bootstrap-dialog.min',
         "popover"          : '_webui_popover/jquery.webui-popover.min',
         "webuploader"      : '_webuploader/webuploader.nolog.min',
+
+        "jqdialog2"        : 'jquery.dialog2/jquery.dialog2',
+        "jqdialog2-helper" : "jquery.dialog2/jquery.dialog2.helpers",
+        "jqvalidation"     : '_jquery.validation/jquery.validate.min',
+        "jqvalidation_zh"  : '_jquery.validation/localization/messages_zh.min',
+        "jqtoastr"         : 'jquery.toastr/toastr.min',  
+
     },
     "shim": {
         "mmgrid": {
@@ -64,6 +65,9 @@ requirejs.config({
         "jqdialog2-helper": {
             deps: ["jqdialog2"],
             exports: 'jQuery.fn.dialog2.helpers'
+        },
+        "jqtoastr": {
+            deps: ["jquery", "css!jquery.toastr/toastr.min"]
         },
         "pnotify": {
             deps: ['css!_pnotify/pnotify.min'],

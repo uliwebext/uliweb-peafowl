@@ -12,7 +12,6 @@
 
     {{use "jquery", ui=True}}
     {{use 'bootstrap3'}}
-
     <script type="text/javascript"
         src="{{=url_for_static('plugins/vendor/require-%s.js' % settings.UI_CONFIG.requirejs_version)}}"></script>
     <script type="text/javascript"
@@ -35,5 +34,6 @@
 
 
 <script type="text/javascript" src="/static/js/modules/adminLTE-app.js"></script>
+<script type="text/javascript" src="/static/js/peafowl.js"></script>
 </body>
 </html>
