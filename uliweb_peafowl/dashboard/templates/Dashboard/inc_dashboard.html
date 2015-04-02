@@ -1,0 +1,21 @@
+
+<div class="row">
+
+{{ for pane in digital['panes']: }}
+<div class="col-xs-{{=digital['colspan']}}">
+    <div class="small-box bg-{{=pane.get('color', 'red')}}">
+        <div class="inner">
+            <h3>
+                {{=pane['count']}}
+                <sup style="font-size: 20px">{{=pane.get('unit', '')}}</sup>
+            </h3>
+            <p>{{=pane['description']}}</p>
+        </div>
+        <div class="icon">
+            <i class="fa {{=pane.get('icon', 'fa-pie-chart')}}"></i>
+        </div>
+        <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+    </div>
+</div>    
+{{pass}}
+</div>

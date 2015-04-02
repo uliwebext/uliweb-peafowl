@@ -1,6 +1,5 @@
 var show_message = function(message, category){
 
-
     require(["jqtoastr"], function(toastr){
         category = category || "success"
 

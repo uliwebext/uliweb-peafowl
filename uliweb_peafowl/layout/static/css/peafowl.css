@@ -139,6 +139,7 @@ input[type="file"].form-control {border:none;background-color:transparent;line-h
 /* Toastr custom style */
 #peafowl-body #toast-container > .toast {
   background-image: none !important;
+  margin:3px auto;
 }
 #peafowl-body #toast-container > .toast:before {
   position: fixed;

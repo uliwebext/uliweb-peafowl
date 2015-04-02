@@ -17,7 +17,7 @@ function get_static_version() {
 requirejs.config({
     "baseUrl": "/static/plugins/vendor",
     "paths": {
-        "app"      : '../modules',
+        "app"      : '../../js/modules',
         "text"     : 'require/text',
         "css"      : 'require/css', 
         "markdown" : 'Markdown.Converter',
