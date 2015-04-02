@@ -1,0 +1,27 @@
+{{extend "admin_layout.html"}}
+
+{{block sidemenu}}
+    {{<< functions.menu('ADMIN', 'library_demo/dashboard')}}
+{{end}}
+
+{{block sidebar_page_title}}
+    {{=_('仪表盘')}}
+{{end}}
+
+{{block sidebar_page_subtitle}}
+{{end}}
+
+{{block custom_css}}
+{{end}}
+
+{{block sidebar_breadcrumb}}
+<ol class="breadcrumb">
+    <li><a href="/"><i class="fa fa-dashboard"></i>{{=_('Home')}}</a></li>
+    <li><a href="{{=ADMIN_URL}}">{{=_('Admin')}}</a></li>
+    <li class="active">{{=_('Dashboard')}}</li>
+</ol>
+{{end}}
+
+{{block main_content}}
+
+{{end}}

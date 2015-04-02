@@ -1,18 +1,27 @@
 var show_message = function(message, category){
-    require(['pnotify'], function(PNotify){
-        new PNotify({
-            history: {history: false}
-            , text: message
-            , type: category || 'success'
-            , delay: 5000
-            /*
-            , animate_speed: 500
-            , animation: {
-                'effect_in': 'scale',
-                'options_in': {easing:'easeOutElastic',percent:100},
-                'effect_out': 'scale',
-                'options_out': {easing:'easeInCubic',percent:0}
-            }*/
-        });
+
+    require(["jqtoastr"], function(toastr){
+        category = category || "success"
+
+        var config = {
+            "closeButton": true,
+            "positionClass": "toast-top-center"   
+        }
+        var title = ""
+
+        if(category == "success") {
+            toastr.success(message, title, config)
+        } else if (category == "error") {
+            toastr.error(message, title, config)
+        } else if (category == "info") {
+            toastr.info(message, title, config)
+        } else if (category == "warning") {
+            toastr.warning(message, title, config)
+        } else {
+            toastr.info(message, title, config)
+        }
     });
+
+    return;
+
 }
