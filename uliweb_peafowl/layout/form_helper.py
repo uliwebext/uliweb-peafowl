@@ -172,7 +172,8 @@ class Bootstrap3_Column(Bootstrap3_Build):
             self.label = self.kwargs.get('label', '')
 
     def get_build(self, form, field, label_width, **kwargs):
-        build_cls = fields_mapping[field.type_name]
+        build_type = kwargs.get('build', fields_mapping[field.type_name])
+        build_cls = builders[build_type]
         build = build_cls(form, field, label_width=label_width, **kwargs)
         return build
 
@@ -329,25 +330,94 @@ class Bootstrap3_Radios(Bootstrap3_Select):
 class Bootstrap3_Checkboxes(Bootstrap3_Radios):
     input_type = 'checkbox'
 
+class Bootstrap3_InputGroup(Bootstrap3_String):
+    '''
+    attrs:
+        'class': will be used in div
+        'before': will be added in front of widget
+        'after': will be added after widget
+    '''
+
+    input_class = ''
+
+    def to_widget(self):
+        d = {}
+        _attrs = copy.deepcopy(self.attrs)
+        d['class'] = _attrs.pop('class', '')
+        d['attrs'] = to_attrs(_attrs)
+        d['before'] = b = _attrs.pop('before', '')
+        if b:
+            d['before'] = '<div class="input-group-addon">%s</div>' % b
+        d['after'] = a = _attrs.pop('after', '')
+        if a:
+            d['after'] = '<div class="input-group-addon">%s</div>' % a
+        return """<div class="input-group %(class)s">
+  %(before)s
+  <input type="text" class="form-control" %(attrs)s>
+  %(after)s
+</div>""" % d
+
+class Bootstrap3_InputBtn(Bootstrap3_String):
+    '''
+    attrs:
+        'class': will be used in div
+        'before': will be added in front of widget
+        'after': will be added after widget
+    '''
+
+    input_class = ''
+
+    def to_widget(self):
+        d = {}
+        _attrs = copy.deepcopy(self.attrs)
+        d['class'] = _attrs.pop('class', '')
+        d['attrs'] = to_attrs(_attrs)
+        d['before'] = b = _attrs.pop('before', '')
+        if b:
+            d['before'] = '<span class="input-group-btn">%s</span>' % b
+        d['after'] = a = _attrs.pop('after', '')
+        if a:
+            d['after'] = '<span class="input-group-btn">%s</span>' % a
+        return """<div class="input-group %(class)s">
+  %(before)s
+  <input type="text" class="form-control" %(attrs)s>
+  %(after)s
+</div>""" % d
+
 fields_mapping = {
+    'str':'str',
+    'select':'select',
+    'text':'text',
+    'unicode':'str',
+    'lines':'lines',
+    'password':'password',
+    'hidden':'hidden',
+    'int':'str',
+    'list':'str',
+    'radios':'radios',
+    'image':'file',
+    'float':'str',
+    'file':'file',
+    'bool':'checkbox',
+    'checkboxes':'checkboxes',
+    'date':'str',
+    'time':'str',
+    'datetime':'str',
+}
+
+builders = {
     'str':Bootstrap3_String,
-    'select':Bootstrap3_Select,
+    'select':Bootstrap3_String,
     'text':Bootstrap3_Text,
-    'unicode':Bootstrap3_String,
     'lines':Bootstrap3_Lines,
     'password':Bootstrap3_Password,
     'hidden':Bootstrap3_Hidden,
-    'int':Bootstrap3_String,
-    'list':Bootstrap3_String,
     'radios':Bootstrap3_Radios,
-    'image':Bootstrap3_File,
-    'float':Bootstrap3_String,
     'file':Bootstrap3_File,
-    'bool':Bootstrap3_Checkbox,
+    'checkbox':Bootstrap3_Checkbox,
     'checkboxes':Bootstrap3_Checkboxes,
-    'date':Bootstrap3_String,
-    'time':Bootstrap3_String,
-    'datetime':Bootstrap3_String,
+    'inputgroup':Bootstrap3_InputGroup,
+    'inputbtn':Bootstrap3_InputBtn,
 }
 class Bootstrap3VLayout(Layout):
     use_table = False
@@ -419,9 +489,6 @@ class Bootstrap3VLayout(Layout):
                         with b.div(_class=col_cls):
                             b << r
         return str(b)
-
-    def get_build(self, field):
-        return fields_mapping[field.type_name]
 
     def process_column(self, col, columns_num):
         col_width = col.pop('colspan', 1)
