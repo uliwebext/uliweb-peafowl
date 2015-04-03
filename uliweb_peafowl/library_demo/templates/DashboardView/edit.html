@@ -1,0 +1,9 @@
+{{extend "DashboardView/dashboard_layout.html"}}
+
+{{block sidebar_page_title}}
+    {{=_('编辑仪表盘')}} 
+{{end}}
+
+{{block main_content}}
+    {{include "Dashboard/inc_dashboard_edit.html"}}
+{{end}}

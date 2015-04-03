@@ -56,8 +56,10 @@ class Dashboard(object):
     def _get_content_panes(self):
 
         panes = self.get_content_panes()
+        layout = self.get_content_layout()
 
         return {
+            'layout': layout,
             'size': len(panes),
             'panes': panes
         }
@@ -69,4 +71,7 @@ class Dashboard(object):
         }
 
     def get_editview(self):
-        return {}
+        return {
+            'digital': self._get_digital_panes(),
+            'content': self._get_content_panes(),
+        }

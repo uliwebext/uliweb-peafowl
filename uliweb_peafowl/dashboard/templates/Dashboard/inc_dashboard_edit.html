@@ -1,0 +1,120 @@
+
+<style>
+    .dashboard-pane {border:1px solid #eee;background-color: #aaa;padding:10px;margin:10px;}
+</style>
+
+<script id="digital_template" type="text/html">
+<div id="dpane-{id}" class="col-xs-{colspan} digital-pane">
+    <div class="small-box bg-{color}">
+        <div class="box-header" style="cursor: move;">
+            <div class="box-tools pull-right">
+                <button class="btn btn-teal btn-xs" data-widget="remove-digital">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>                            
+        </div>
+        <div class="inner">
+            <h3>
+                ???
+            </h3>
+            <p>{title}</p>
+        </div>
+    </div>
+</div>       
+</script>
+<div class="row">
+    <div class="col-xs-8 dashboard-pane">
+        <div id="digital-row" class="row">
+        </div>
+
+        <div id="content-row" class="row">
+            {{for index, colspan in enumerate(content['layout']):}}
+                <section class="col-lg-{{=colspan}} layout-column ui-sortable">
+                    {{ for pane in content['panes']: }}
+                        {{ if pane['column'] == index + 1: }}
+                            <div class="box box-success portlet">
+                                <div class="box-header ui-sortable-handle" style="cursor: move;">
+                                    <i class="fa fa-list"></i>
+                                    <h3 class="box-title">{{=pane['title']}}</h3>
+                                </div>
+                                <div class="box-body" style="overflow: hidden; width: auto; height: {{=pane['height']}}px;">
+                                </div>
+                            </div>
+                        {{ pass }}
+                    {{ pass }}
+                </section>
+            {{pass}}
+        </div>         
+    </div>
+
+   
+
+    <div class="col-xs-4">
+    </div>
+</div>
+
+
+
+    
+
+<script type="text/javascript">
+    $(function(){
+
+
+        var digital_panes = [];
+        var template = $("#digital_template").html();
+
+        {{ for pane in digital['panes']: }}
+        digital_panes.push({
+            'id'   : "{{=pane.get('id', 'red')}}",
+            'color': "{{=pane.get('color', 'red')}}",
+            'title': "{{=pane.get('description', 'Untitled')}}",
+        });
+        {{pass}}       
+
+
+
+        require(["app/dashboard"], function(utils){
+
+            $("#digital-row").sortable({
+                placeholder: "sort-highlight",
+                handle: ".box-header, .nav-tabs",
+                zIndex: 999999
+            }).disableSelection();    
+
+            $(".layout-column").sortable({
+                placeholder: "sort-highlight",
+                connectWith: ".layout-column",
+                handle: ".box-header, .nav-tabs",
+                forcePlaceholderSize: true,
+                zIndex: 999999,
+
+                update: function(event, ui) {
+                    return true
+                }
+            }).disableSelection();    
+
+            var remove_handler = function(){
+                debugger;
+                var box = $(this).parents(".digital-pane").first();
+                box.slideUp();
+                id = box.attr("id").replace("dpane-", "")
+
+                var new_digital_panes = []
+                for(var i=0; i<digital_panes.length; i++) {
+                    if(digital_panes[i].id != id) {
+                        new_digital_panes.push(digital_panes[i])
+                    }
+                }
+
+                digital_panes = new_digital_panes
+                utils.refresh_digital_panes(digital_panes, $("#digital-row"), template)
+            } 
+
+            $("#digital-row").delegate("[data-widget='remove-digital']", "click", remove_handler)
+            utils.refresh_digital_panes(digital_panes, $("#digital-row"), template)
+
+            
+        });
+    });
+</script>
