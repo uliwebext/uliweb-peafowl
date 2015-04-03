@@ -89,11 +89,10 @@ class AdminModelsView(object):
 
     def _post_created_form(self, fcls):
         from uliweb.form import SelectField
-        from uliweb_peafowl.layout.form_helper import Bootstrap3Layout
         from uliweb.form.widgets import Button
         from uliweb.core.html import Tag
 
-        fcls.layout_class = Bootstrap3Layout
+        fcls.layout_class = 'bs3t'
         fcls.form_buttons = [
             str(Button(value=_('Save'), _class="btn btn-primary btn-sm",
                 name="submit", type="submit")),

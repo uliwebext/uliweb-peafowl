@@ -102,6 +102,7 @@
 }
 
 /* form related */
+.field_required {color:red;}
 .form-group {margin-bottom:10px;}
 .form-group .field_required{color:red;}
 

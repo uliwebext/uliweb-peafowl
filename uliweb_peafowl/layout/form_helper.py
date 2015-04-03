@@ -40,8 +40,8 @@ class Bootstrap3_Build(object):
             self.value = self.form.data.get(fieldname, '')
             self.html_value = field.to_html(self.value)
         else:
-            self.value = None
-            self.html_value = self.form.data.get(fieldname, '')
+            self.value = self.form.data.get(fieldname, '')
+            self.html_value = self.value
 
         if self.table_cell:
             self.label = field.get_label(self._label, _class="table-field-label")
@@ -222,7 +222,7 @@ class Bootstrap3_Text(Bootstrap3_Build):
     def to_widget(self):
         self.attrs['rows'] = getattr(self.field, 'rows', 4)
         _attrs = to_attrs(self.attrs)
-        return '<textarea%s>%s</textarea>' % (_attrs, self.value)
+        return '<textarea%s>%s</textarea>' % (_attrs, self.html_value)
 
 Bootstrap3_Lines = Bootstrap3_Text
 
@@ -407,7 +407,7 @@ fields_mapping = {
 
 builders = {
     'str':Bootstrap3_String,
-    'select':Bootstrap3_String,
+    'select':Bootstrap3_Select,
     'text':Bootstrap3_Text,
     'lines':Bootstrap3_Lines,
     'password':Bootstrap3_Password,
