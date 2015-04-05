@@ -20,11 +20,11 @@ def fileupload():
     form = UploadForm()
     flag = form.validate(request.values, request.files)
     if flag:
-        filename = functions.save_file_field(form.filename)
-        print request.values, request.files
-        url = functions.get_href(filename)
-        return json({'success':True, 'filename':filename, 'url':url})
+        filename = functions.save_file(form.filename.data.filename, form.filename.data.file)
+        url = functions.get_href(filename, alt=form.filename.data.filename)
+        return json({'success':True, 'filename':filename, 'alt':form.filename.data.filename, 'url':url})
     else:
+        print form.errors
         #如果校验失败，则再次返回Form，将带有错误信息
         return json({'success':False, 'errors':form.errors})
 

@@ -145,6 +145,8 @@
         uploader.on( 'uploadSuccess', function( file, data ) {
             // 显示已上传
             //$( '#'+file.id ).find('.state').text('已上传');
+            var f = $('#'+file.id);
+            f.find('.info').html('<a href="'+data.url+'">' + data.alt + '</a>');
             // 显示删除标志
             $( '#'+file.id ).find('.state').html('<a href="/library_demo/filedelete/' + data.filename + '" class="deleteFile">删除</a>');
         });
