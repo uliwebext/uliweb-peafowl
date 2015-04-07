@@ -1,77 +1,49 @@
 # coding=utf-8
-from uliweb import expose, functions
+from uliweb import functions
+
+DIGITAL = '0'
+CONTENT = '1'
+
 
 class Dashboard(object):
+    def __init__(self):
+        self.panel = functions.get_model('panel')
+        self.dashboard = functions.get_model('dashboard')
+        self.panellayout = functions.get_model('panellayout')
+    
+    def _get_panels(self, type):
+        dashboard = self.dashboard.get(self.dashboard.c.default == True, self.dashboard.c.panel_type == type)
+        layout = dashboard.get_display_value('layout')
 
 
-    def _get_digital_panes(self):
+        condition = (self.panellayout.c.dashboard == dashboard.id)
 
-        # color: 
-        #   aqua, green, yellow, red, blue, light-blue
-        #   navy, teal, olive, lime, orange, fuchsia
-        #   purple, maroon
+        grids = []
+        for index, colspan in enumerate(layout):
 
-        default_colors = [
-            'light-blue', 'green', 'yellow', 'red', 
-            'purple', 'blue', 'olive',  'orange', 'maroon', 
-            'aqua', 'fuchsia', 'teal', 'lime', 
-        ]
+            cond = (self.panellayout.c.col == index + 1) & condition
+            panels = [panel.panel for panel in
+                      self.panellayout.filter(cond).order_by(self.panellayout.c.row)]
+            grids.append({'colspan': colspan, 'panels': panels})
+        return grids
 
-        default_icons = [
-            'fa-bar-chart', 'fa-pie-chart', 'fa-line-chart', 'fa-flag',
-            'fa-slack', 'fa-cubes', 'fa-cube', 'fa-pagelines', 'fa-anchor'
-        ]
+    def get_digital_panes(self):
+        return self._get_panels(DIGITAL)
 
-        panes = self.get_digital_panes()
+    def get_content_panes(self):
+        return self._get_panels(CONTENT)
 
-        for index, pane in enumerate(panes):
-            if not pane.has_key('color'):
-                pane['color'] = default_colors[index % len(default_colors)]
-            if not pane.has_key('icon'):
-                pane['icon'] = default_icons[index % len(default_icons)]
-
-        digital_pane_size = len(panes)
-        if digital_pane_size   == 6:
-            colspan = 2
-        elif digital_pane_size == 5:
-            colspan = 3
-        elif digital_pane_size == 4:
-            colspan = 3
-        elif digital_pane_size == 3:
-            colspan = 4
-        elif digital_pane_size == 2:
-            colspan = 6
-        elif digital_pane_size == 1:
-            colspan = 12    
-        else:
-            colspan = 3    
-
-        return {
-            'size': digital_pane_size,
-            'colspan': colspan,
-            'panes': panes
-        }
-
-
-    def _get_content_panes(self):
-
-        panes = self.get_content_panes()
-        layout = self.get_content_layout()
-
-        return {
-            'layout': layout,
-            'size': len(panes),
-            'panes': panes
-        }
+    def save(self):
+        pass
 
     def get_view(self):
         return {
-            'digital': self._get_digital_panes(),
-            'content': self._get_content_panes(),
+            'digital': self.get_digital_panes(),
+            'content': self.get_content_panes(),
         }
 
     def get_editview(self):
         return {
-            'digital': self._get_digital_panes(),
-            'content': self._get_content_panes(),
+            'digital': self.get_digital_panes(),
+            'content': self.get_content_panes(),
         }

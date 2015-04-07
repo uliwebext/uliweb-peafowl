@@ -1,46 +1,46 @@
 
 <div class="row">
-{{ for pane in digital['panes']: }}
-<div class="col-xs-{{=digital['colspan']}}">
-    <div class="small-box bg-{{=pane.get('color', 'red')}}">
+{{ for panes in digital: }}
+<div class="col-xs-{{=panes.get('colspan')}}">
+    {{ for pane in panes.get('panels'): }}
+    <div class="small-box bg-{{=pane.color}}">
         <div class="inner">
             <h3>
-                {{=pane['count']}}
-                <sup style="font-size: 20px">{{=pane.get('unit', '')}}</sup>
+                {{=pane.num}}
+                <sup style="font-size: 20px">{{=pane.unit}}</sup>
             </h3>
-            <p>{{=pane['description']}}</p>
+            <p>{{=pane.description}}</p>
         </div>
         <div class="icon">
-            <i class="fa {{=pane.get('icon', 'fa-pie-chart')}}"></i>
+            <i class="fa {{=pane.icon}}"></i>
         </div>
         <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
     </div>
+    {{ pass }}
 </div>    
 {{pass}}
 </div>
 
 <div class="row">
-    {{for index, colspan in enumerate(content['layout']):}}
-        <section class="col-lg-{{=colspan}} layout-column ui-sortable">
-            {{ for pane in content['panes']: }}
-                {{ if pane['column'] == index + 1: }}
-                    <div class="box box-success portlet">
-                        <div class="box-header ui-sortable-handle" style="cursor: move;">
-                            <i class="fa fa-list"></i>
-                            <h3 class="box-title">{{=pane['title']}}</h3>
-                        </div>
-                        <div class="box-body" style="overflow: hidden; width: auto; height: {{=pane['height']}}px;">
-                        {{if pane.get('type', '') == 'IFRAME':}}
-                        <iframe src="{{=pane['url']}}" style="width:100%;height:100%;border:1px solid #ccc"></iframe>
-                        {{pass}}
-
-                        </div>
+    {{for panes in content:}}
+        <section class="col-lg-{{=panes.get('colspan')}} layout-column ui-sortable">
+            {{ for pane in panes.get('panels'): }}
+                <div class="box box-success portlet">
+                    <div class="box-header ui-sortable-handle" style="cursor: move;">
+                        <i class="fa fa-list"></i>
+                        <h3 class="box-title">{{=pane.title}}</h3>
                     </div>
-                {{ pass }}
+                    <div class="box-body" style="overflow: hidden; width: auto; height: {{=pane.height}}px;">
+                    {{if pane.content_type == '0':}}
+                    <iframe src="{{=pane.URI}}" style="width:100%;height:100%;border:1px solid #ccc"></iframe>
+                    {{pass}}
+
+                    </div>
+                </div>
             {{ pass }}
         </section>
     {{pass}}
-</div>    
+</div>
 
 <script type="text/javascript">
     $(function(){
