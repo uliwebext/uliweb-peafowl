@@ -20,9 +20,11 @@
                     {{if form.errors.get('password'):}}{{=form.errors['password']}}{{pass}}
                 </p>
             </div>          
-            <div class="form-group">
-                <input class="checkbox icheck" id="field_rememberme" name="rememberme" type="checkbox">
-                {{=_('Remember Me')}}
+            <div class="checkbox">
+                <label>
+                    <input class="icheck" id="field_rememberme" name="rememberme" type="checkbox">
+                    {{=_('Remember Me')}}
+                </label>
             </div>
         </div>
         <div class="footer">                                                               

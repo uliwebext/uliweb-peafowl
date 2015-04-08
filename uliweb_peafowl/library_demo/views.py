@@ -44,7 +44,7 @@ class LibraryDemoView(object):
     def _make_form(self):
         f = {
             'fields':[
-                {'name':'str', 'type':'str', 'label':'String', 'required':True, 'help_string':'help string', 'placeholder':'password'},
+                {'name':'str', 'type':'str', 'label':'String', 'required':True, 'help_string':'help string', 'placeholder':'string'},
                 {'name':'password', 'type':'password', 'label':'Password'},
                 {'name':'hidden', 'type':'hidden', 'label':'Hidden'},
                 {'name':'int', 'type':'int', 'label':'Integer'},
@@ -128,6 +128,7 @@ class LibraryDemoView(object):
                 else:
                     return result
             else:
+                print '====== errors =', form.errors
                 if ajax:
                     return json({'success':False, 'errors':form.errors})
                 else:

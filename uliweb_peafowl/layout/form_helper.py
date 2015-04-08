@@ -179,8 +179,16 @@ class Bootstrap3_Column(Bootstrap3_Build):
 
     def html(self):
         if self.table_cell:
-            return ('<div class="table-field-row">' + self.label +
-                    '<div class="table-field-col">' + self.content + '</div></div>')
+            if self.error:
+                error = self.get_error()
+                error_class = ' has-error'
+            else:
+                error = ''
+                error_class = ''
+
+            return ('<div class="table-field-row%s">' % error_class + self.label +
+                    '<div class="table-field-col">' + self.content +
+                    error + '</div></div>')
 
         col_cls = 'form-group'
         if self.error:
