@@ -5,7 +5,7 @@
 {{block content}}
 
 <div class="form-box" id="login-box">
-    <div class="header">{{=_('Admin Panel')}}</div>
+    <div class="header">{{=settings.LAYOUT.ADMIN_TITLE}}</div>
     <form action="" method="post">
         <div class="body bg-gray">
             <div class="form-group {{if form.errors.get('username'):}}has-error{{pass}}">

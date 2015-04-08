@@ -7,7 +7,7 @@
  * @Author  Almsaeed Studio
  * @Support <http://www.almsaeedstudio.com>
  * @Email   <support@almsaeedstudio.com>
- * @version 2.0.5
+ * @version 2.1.0
  * @license MIT <http://opensource.org/licenses/MIT>
  */
 
@@ -57,18 +57,28 @@ $.AdminLTE.options = {
   //choose to enable the plugin, make sure you load the script
   //before AdminLTE's app.js
   enableFastclick: true,
+  //Control Sidebar Options
+  enableControlSidebar: true,
+  controlSidebarOptions: {
+    //Which button should trigger the open/close event
+    toggleBtnSelector: "[data-toggle='control-sidebar']",
+    //The sidebar selector
+    selector: ".control-sidebar",
+    //Enable slide over content
+    slide: true
+  },
   //Box Widget Plugin. Enable this plugin
   //to allow boxes to be collapsed and/or removed
   enableBoxWidget: true,
   //Box Widget plugin options
   boxWidgetOptions: {
     boxWidgetIcons: {
-      //The icon that triggers the collapse event
-      collapse: 'fa fa-minus',
-      //The icon that trigger the opening event
-      open: 'fa fa-plus',
-      //The icon that triggers the removing event
-      remove: 'fa fa-times'
+      //Collapse icon
+      collapse: 'fa-minus',
+      //Open icon
+      open: 'fa-plus',
+      //Remove icon
+      remove: 'fa-times'
     },
     boxWidgetSelectors: {
       //Remove button selector
@@ -133,6 +143,11 @@ $(function () {
 
   //Enable sidebar tree view controls
   $.AdminLTE.tree('.sidebar');
+
+  //Enable control sidebar
+  if (o.enableControlSidebar) {
+    $.AdminLTE.controlSidebar.activate();
+  }
 
   //Add slimscroll to navbar dropdown
   if (o.navbarMenuSlimscroll && typeof $.fn.slimscroll != 'undefined') {
@@ -348,6 +363,53 @@ function _init() {
     });
   };
 
+  /* ControlSidebar
+   * ==============
+   * Adds functionality to the right sidebar
+   *
+   * @type Object
+   * @usage $.AdminLTE.controlSidebar.activate(options)
+   */
+  $.AdminLTE.controlSidebar = {
+    //instantiate the object
+    activate: function () {
+      //Get the object
+      var _this = this;
+      //Update options
+      var o = $.AdminLTE.options.controlSidebarOptions;
+      //Get the sidebar
+      var sidebar = $(o.selector);
+      //The toggle button
+      var btn = $(o.toggleBtnSelector);
+
+      //Listen to the click event
+      btn.click(function (e) {
+        e.preventDefault();
+        if (!sidebar.hasClass('control-sidebar-open')
+                && !$('body').hasClass('control-sidebar-open')) {
+          //Open the sidebar
+          _this.open(sidebar, o.slide);
+        } else {
+          _this.close(sidebar, o.slide);
+        }
+      });
+    },
+    //Open the control sidebar
+    open: function (sidebar, slide) {
+      if (slide)
+        sidebar.addClass('control-sidebar-open');
+      else
+        $('body').addClass('control-sidebar-open');
+    },
+    //Close the control sidebar
+    close: function (sidebar, slide) {
+      if (slide)
+        sidebar.removeClass('control-sidebar-open');
+      else
+        $('body').removeClass('control-sidebar-open');
+    }
+  };
+
   /* BoxWidget
    * =========
    * BoxWidget is plugin to handle collapsing and
@@ -358,36 +420,44 @@ function _init() {
    *        Set all of your option in the main $.AdminLTE.options object
    */
   $.AdminLTE.boxWidget = {
+    selectors: $.AdminLTE.options.boxWidgetOptions.boxWidgetSelectors,
+    icons: $.AdminLTE.options.boxWidgetOptions.boxWidgetIcons,
     activate: function () {
-      var o = $.AdminLTE.options;
       var _this = this;
       //Listen for collapse event triggers
-      $(o.boxWidgetOptions.boxWidgetSelectors.collapse).click(function (e) {
+      $(_this.selectors.collapse).on('click', function (e) {
         e.preventDefault();
         _this.collapse($(this));
       });
 
       //Listen for remove event triggers
-      $(o.boxWidgetOptions.boxWidgetSelectors.remove).click(function (e) {
+      $(_this.selectors.remove).on('click', function (e) {
         e.preventDefault();
         _this.remove($(this));
       });
     },
     collapse: function (element) {
+      var _this = this;
       //Find the box parent
       var box = element.parents(".box").first();
       //Find the body and the footer
-      var bf = box.find(".box-body, .box-footer");
+      var box_content = box.find("> .box-body, > .box-footer");
       if (!box.hasClass("collapsed-box")) {
-        //Convert minus into plus
-        element.children(".fa-minus").removeClass("fa-minus").addClass("fa-plus");
-        bf.slideUp(300, function () {
+        //Convert minus into plus        
+        element.children(":first")
+                .removeClass(_this.icons.collapse)
+                .addClass(_this.icons.open);
+        //Hide the content
+        box_content.slideUp(300, function () {
           box.addClass("collapsed-box");
         });
       } else {
         //Convert plus into minus
-        element.children(".fa-plus").removeClass("fa-plus").addClass("fa-minus");
-        bf.slideDown(300, function () {
+        element.children(":first")
+                .removeClass(_this.icons.open)
+                .addClass(_this.icons.collapse);
+        //Show the content
+        box_content.slideDown(300, function () {
           box.removeClass("collapsed-box");
         });
       }
@@ -396,8 +466,7 @@ function _init() {
       //Find the box parent
       var box = element.parents(".box").first();
       box.slideUp();
-    },
-    options: $.AdminLTE.options.boxWidgetOptions
+    }
   };
 }
 

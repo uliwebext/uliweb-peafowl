@@ -1,7 +1,10 @@
 {{extend "theme/sidebar.html"}}
 
 {{block sidebar_logo}}
-    <a href="{{=ADMIN_URL}}" class="logo" id="admin-logo">Uliweb Admin</a>
+    <a href="{{=ADMIN_URL}}" class="logo logo-lg" id="admin-logo">
+        <span class="logo-lg">{{=settings.LAYOUT.ADMIN_TITLE}}</span>
+        <span class="logo-mini">{{<<settings.LAYOUT.ADMIN_TITLE_SHORT}}</span>
+    </a>
 {{end}}
 
 {{block sidebar_page_title}}{{end}}
