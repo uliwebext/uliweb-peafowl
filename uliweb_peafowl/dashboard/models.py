@@ -33,6 +33,7 @@ class Panel(Model):
     description = Field(CHAR, max_length=100, verbose_name='描述')
     num = Field(int, verbose_name='数量')
     unit = Field(CHAR, max_length=10, verbose_name='单位')
+    panel_type = Field(CHAR, max_length=1, choices=get_var('DASHBOARD/PANEL_TYPE'), verbose_name='面板类型')
     content_type = Field(CHAR, max_length=1, choices=get_var('DASHBOARD/CONTENT_TYPE'),
                          verbose_name='内容类型')
     URI = Field(str, max_length=255, verbose_name='访问URI')

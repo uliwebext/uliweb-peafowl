@@ -1,6 +1,10 @@
 <div id="digitalRow" class="row"></div>
 <div id="contentRow" class="row"></div>
 
+<style>
+    #contentRow .ajax_content {width:100%;height:100%;border:1px solid #ddd;overflow:scroll;}
+    #contentRow iframe {width:100%;height:100%;border:1px solid #ddd}
+</style>
 
 <script type="text/html" id="digital_tmpl">
 <% for ( var i = 0; i < digital.length; i++ ) { %>
@@ -35,31 +39,37 @@
 
 <script type="text/html" id="content_tmpl">
 <% for ( var i = 0; i < content.length; i++ ) { %>
-    <section class="col-lg-<%=content[i].colspan%> layout-column ui-sortable">
+    <section class="col-lg-<%=content[i].colspan%> connectedSortable layout-column ui-sortable">
         <% var panes = content[i].panes; %>
 
         <% for ( var j = 0; j < panes.length; j++ ) { %>
 
-            <div class="box box-success portlet">
+            <% var box_id = dashboard.get_boxid(); %>
+
+            <div class="box box-info portlet">
                 <div class="box-header ui-sortable-handle" style="cursor: move;">
                     <i class="fa fa-list"></i>
                     <h3 class="box-title"><%=panes[j].title%></h3>
                 </div>
-                <div class="box-body" 
+                <div class="box-body" id="<%=box_id%>"
                     style="overflow: hidden; width: auto; height: <%=panes[j].height%>px;">
 
                 <% if(panes[j].content_type == '0') { %>
-                    <iframe src="<%=panes[j].uri%>" 
-                        style="width:100%;height:100%;border:1px solid #ccc"></iframe>
+                    <iframe src="<%=panes[j].uri%>"></iframe>
                 <% } %>
 
+                <% if(panes[j].content_type == '1') { %>
+                    <div class="ajax_content"></div>
+                <%    dashboard.ajax_content_loading(panes[j].uri, "#"+box_id + " .ajax_content"); %>
+                <% } %>
                 </div>
             </div>
         <% } %>
     </section>
 <% } %>
-
 </script>
+
+
 
 <script type="text/javascript">
 
@@ -106,8 +116,8 @@ var digital_def = [];
 
             var dashboard = new utils.Dashboard();
 
-            dashboard.render_digital($("#digitalRow"), "digital_tmpl", digital_def)
-            dashboard.render_content($("#contentRow"), "content_tmpl", content_def)
+            dashboard.render($("#digitalRow"), "digital_tmpl", {'digital': digital_def})
+            dashboard.render($("#contentRow"), "content_tmpl", {'content': content_def})
 
             $(".layout-column").sortable({
                 placeholder: "sort-highlight",

@@ -1,7 +1,9 @@
 {{extend "DashboardView/dashboard_layout.html"}}
 
 {{block sidebar_page_title}}
-    {{=_('编辑仪表盘')}} 
+    {{=_('编辑仪表盘')}}
+    &nbsp;
+    <a class="btn btn-primary btn-sm btn-flat" id="btnSaveDashboard" href="#A">保存</a> 
 {{end}}
 
 {{block main_content}}

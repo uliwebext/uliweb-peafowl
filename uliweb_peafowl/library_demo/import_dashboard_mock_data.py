@@ -32,8 +32,17 @@ def import_mock_data():
         obj = panellayout(**layout)
         obj.save()
 
+def clear_mock_data():
+    dashboard = functions.get_model('dashboard')
+    panel = functions.get_model('panel')
+    panellayout = functions.get_model('panellayout')
+
+    dashboard.remove()    
+    panel.remove()
+    panellayout.remove()
 
 def process():
+    clear_mock_data()
     import_mock_data()
 
 

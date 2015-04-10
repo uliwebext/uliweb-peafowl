@@ -1,120 +1,487 @@
 
 <style>
-    .dashboard-pane {border:1px solid #eee;background-color: #aaa;padding:10px;margin:10px;}
+    .dashboard-pane {border:1px solid #eee;
+        background-color: #aaa;padding:10px;
+        margin-right:-5px;margin-left:5px;}
+    .digital-pane.sort-highlight {height:80px;width:3px;border:1px dotted red;}
+
+    .dpane-item {line-height: 25px;position: relative; 
+        padding-left:30px;border-bottom:1px solid #eee;padding:4px 10px 4px 35px;}
+    .dpane-item .btn, .dpane-item .label {float:right;}
+    .dpane-item .selected {color:#999;}
+    .dpane-item .dpane-color {width:20px;border:1px solid #ccc;
+        display:block;position:absolute;height:20px;margin-right:5px;left:0px;top:7px;}
+
+    .cpane-item {line-height: 25px;position: relative; 
+        padding-left:30px;border-bottom:1px solid #eee;padding:4px 10px 4px 35px;}
+    .cpane-item .btn, .cpane-item .label {float:right;}
+    .cpane-item .selected {color:#999;}
+    .cpane-item .cpane-color {width:20px;border:1px solid #ccc;
+        display:block;position:absolute;height:20px;margin-right:5px;left:0px;top:7px;}   
+
+    .layout-changer-label{font-weight:bold;}  
+    .layout-changer {margin-bottom:10px;background-color:#eee;padding:5px;}
+    .layout-changer select {width:70%;}
 </style>
 
-<script id="digital_template" type="text/html">
-<div id="dpane-{id}" class="col-xs-{colspan} digital-pane">
-    <div class="small-box bg-{color}">
-        <div class="box-header" style="cursor: move;">
-            <div class="box-tools pull-right">
-                <button class="btn btn-teal btn-xs" data-widget="remove-digital">
-                    <i class="fa fa-times"></i>
-                </button>
-            </div>                            
-        </div>
-        <div class="inner">
-            <h3>
-                ???
-            </h3>
-            <p>{title}</p>
-        </div>
-    </div>
-</div>       
+<script type="text/html" id="digital_tmpl">
+<% for ( var i = 0; i < digital.length; i++ ) { %>
+    
+    <div class="col col-xs-<%=digital[i].colspan%>" _colspan="<%=digital[i].colspan%>">
+        <% var panes = digital[i].panes; %>
+
+        <% for ( var j = 0; j < panes.length; j++ ) { %>
+            <div id="dpane-<%=panes[j].name%>" class="small-box bg-<%=panes[j].color%> digital-pane" _name="<%=panes[j].name%>">
+                <div class="box-header" style="cursor: move;">
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-teal btn-xs" data-widget="remove-digital">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>                            
+                </div>            
+                <div class="inner">
+                    <p>
+                        <%=panes[j].description%>
+                    </p>
+                </div>
+            </div>
+        <% } %>
+    </div>    
+
+<% } %>
+
 </script>
+
+<script type="text/html" id="content_tmpl">
+<% for ( var i = 0; i < content.length; i++ ) { %>
+    <section class="col col-lg-<%=content[i].colspan%> connectedSortable layout-column ui-sortable"
+         _colspan="<%=content[i].colspan%>">
+        <% var panes = content[i].panes; %>
+
+        <% for ( var j = 0; j < panes.length; j++ ) { %>
+
+            <% var box_id = dashboard.get_boxid();%>
+
+            <div id="cpane-<%=panes[j].name%>" class="box box-info portlet content-pane" _name="<%=panes[j].name%>">
+                <div class="box-header ui-sortable-handle" style="cursor: move;">
+                    <i class="fa fa-list"></i>
+                    <h3 class="box-title"><%=panes[j].title%></h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-teal btn-xs" data-widget="remove-content">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div> 
+                </div>
+
+                <div class="box-body" id="<%=box_id%>"
+                    style="overflow: hidden; width: auto; height: <%=panes[j].height%>px;">
+                </div>
+            </div>
+        <% } %>
+    </section>
+<% } %>
+</script>
+
+<script type="text/html" id="digital_list_tmpl">
+<% for (var i=0; i< all_digital.length; i++) { %>
+    <div id="dpane-u-<%=all_digital[i].name%>" class="dpane-item">
+        <div class="dpane-color bg-<%=all_digital[i].color%>"></div>
+        <% if (!dashboard.is_pane_added(all_digital[i].name, digital)) { %>
+            <span class=""><%=all_digital[i].title || all_digital[i].description%></span>
+            <button class="btn btn-flat btn-info btn-xs" value="增加">增加</button>
+        <% } else { %> 
+            <span class="selected"><%=all_digital[i].title || all_digital[i].description%></span>
+            <label class="label label-default">已添加</label>
+        <% } %>
+    </div>
+<% } %>  
+</script>
+<script type="text/html" id="content_list_tmpl">
+<div class="layout-changer">
+    <span class="layout-changer-label">
+        <i class="fa fa-tasks"></i> 切换布局：
+    </span>
+    <select id="layoutChanger">
+    <% for (var i=0; i< layout.length; i++) { %>
+        <% if(current_layout == layout[i][1]){ %> 
+            <option value="<%=layout[i][1]%>" selected><%=layout[i][1]%></option>
+        <% } else { %> 
+            <option value="<%=layout[i][1]%>"><%=layout[i][1]%></option>
+        <% } %>     
+    <% } %> 
+    </select>
+</div>
+<% for (var i=0; i< all_content.length; i++) { %>
+    <div id="cpane-u-<%=all_content[i].name%>" class="cpane-item">
+        <div class="cpane-color bg-<%=all_content[i].color%>"></div>
+        <% if (!dashboard.is_pane_added(all_content[i].name, content)) { %>
+            <span class=""><%=all_content[i].title%></span>
+            <button class="btn btn-flat btn-info btn-xs" value="增加">增加</button>
+        <% } else {%> 
+            <span class="selected"><%=all_content[i].title%></span>
+            <label class="label label-default">已添加</label>
+        <% } %>
+    </div>
+<% } %>      
+</script>
+
 <div class="row">
     <div class="col-xs-8 dashboard-pane">
-        <div id="digital-row" class="row">
-        </div>
-
-        <div id="content-row" class="row">
-            {{for index, colspan in enumerate(content['layout']):}}
-                <section class="col-lg-{{=colspan}} layout-column ui-sortable">
-                    {{ for pane in content['panes']: }}
-                        {{ if pane['column'] == index + 1: }}
-                            <div class="box box-success portlet">
-                                <div class="box-header ui-sortable-handle" style="cursor: move;">
-                                    <i class="fa fa-list"></i>
-                                    <h3 class="box-title">{{=pane['title']}}</h3>
-                                </div>
-                                <div class="box-body" style="overflow: hidden; width: auto; height: {{=pane['height']}}px;">
-                                </div>
-                            </div>
-                        {{ pass }}
-                    {{ pass }}
-                </section>
-            {{pass}}
-        </div>         
+        <div id="digitalRow" class="row"></div>
+        <div id="contentRow" class="row"></div>        
     </div>
 
-   
-
     <div class="col-xs-4">
+        <div class="box">
+            <div class="box-header" style="cursor: move;">
+                <h3 class="box-title">可选数字面板</h3>
+            </div>
+            <div class="box-body" style="height:300px;overflow:auto" id="digitalList">
+            </div>
+        </div>        
+        <div class="box">
+            <div class="box-header" style="cursor: move;">
+                <h3 class="box-title">可选内容面板</h3>
+            </div>
+            <div class="box-body" style="height:300px;overflow:auto" id="contentList">
+            </div>
+        </div>                
     </div>
 </div>
 
 
+<script type="text/javascript">
+var content_def = [];
+ {{for colums in content:}}
+    var colspan = '{{=colums.get('colspan')}}';
+    var panes = [];
+    {{ for pane in colums.get('panels'): }}
+        var pane = {}
+        pane.name = '{{=pane.name}}';
+        pane.title = '{{=pane.title}}';
+        pane.content_type = '{{=pane.content_type}}';
+        pane.uri = '{{=pane.URI}}';
+        pane.height = '{{=pane.height}}';
+        panes.push(pane)
+    {{ pass }}
 
+    content_def.push({'colspan': colspan, 'panes': panes});
+{{ pass }}
+
+var digital_def = [];
+{{ for colums in digital: }}
+    var colspan = '{{=colums.get('colspan')}}';
+    var panes = [];
+    {{ for pane in colums.get('panels'): }}
+        var pane = {}
+        pane.title = '{{=pane.title}}';
+        pane.color = '{{=pane.color}}';
+        pane.name = '{{=pane.name}}';
+        pane.description = '{{=pane.description}}';
+        panes.push(pane)
+    {{ pass }}
+
+    digital_def.push({'colspan': colspan, 'panes': panes});
+{{ pass }}
+
+var all_digital_def = [];
+{{for pane in all_digital:}}
+    var pane = {}
+    pane.title = '{{=pane.title}}';
+    pane.color = '{{=pane.color}}';
+    pane.name = '{{=pane.name}}';
+    pane.description = '{{=pane.description}}';
+    all_digital_def.push(pane)
+{{pass}}
+
+var all_content_def = [];
+{{for pane in all_content:}}
+    var pane = {}
+    pane.name = '{{=pane.name}}';
+    pane.title = '{{=pane.title}}';
+    pane.content_type = '{{=pane.content_type}}';
+    pane.uri = '{{=pane.URI}}';
+    pane.height = '{{=pane.height}}';
+    all_content_def.push(pane)
+{{pass}}
+
+var layout_def = [];
+{{for layout in content_layout_def:}}
+    layout_def.push(['{{=layout[0]}}', '{{=layout[1]}}']);
+{{pass}}
+
+var current_content_layout = "{{=current_content_layout}}";
+</script>
     
-
 <script type="text/javascript">
     $(function(){
-
-
         var digital_panes = [];
-        var template = $("#digital_template").html();
+        require(["app/dashboard", "json2"], function(utils){
 
-        {{ for pane in digital['panes']: }}
-        digital_panes.push({
-            'id'   : "{{=pane.get('id', 'red')}}",
-            'color': "{{=pane.get('color', 'red')}}",
-            'title': "{{=pane.get('description', 'Untitled')}}",
-        });
-        {{pass}}       
+            var dashboard = new utils.Dashboard();
 
+            var get_digital_def_from_tags = function() {
+                return $("#digitalRow .col").map(function(index, column) {
 
+                    var colspan = $(column).attr("_colspan");
+                    panes = $(column).children().map(function(index, item) {
+                        var name = $(item).attr("_name")
+                        return get_pane(name, all_digital_def);
+                    })
 
-        require(["app/dashboard"], function(utils){
+                    return {
+                        'colspan': colspan,
+                        'panes': panes
+                    }
+                })
+            }
 
-            $("#digital-row").sortable({
-                placeholder: "sort-highlight",
-                handle: ".box-header, .nav-tabs",
-                zIndex: 999999
-            }).disableSelection();    
+            var get_content_def_from_tags = function() {
+                return $("#contentRow .col").map(function(index, column) {
 
-            $(".layout-column").sortable({
-                placeholder: "sort-highlight",
-                connectWith: ".layout-column",
-                handle: ".box-header, .nav-tabs",
-                forcePlaceholderSize: true,
-                zIndex: 999999,
+                    var colspan = $(column).attr("_colspan");
+                    panes = $(column).children().map(function(index, item) {
+                        var name = $(item).attr("_name")
+                        return get_pane(name, all_content_def);
+                    })
 
-                update: function(event, ui) {
-                    return true
+                    return {
+                        'colspan': colspan,
+                        'panes': panes
+                    }
+                })                
+            }
+
+            var get_save_data = function() {
+                var digital = [], content = [];
+                $("#digitalRow .col").map(function(col_index, column) {
+                    var colspan = $(column).attr("_colspan");
+                    $(column).children().map(function(row_index, item) {
+                        var name = $(item).attr("_name")
+                        digital.push(['digital', name, row_index+1, col_index+1])
+                    })
+                })    
+
+                $("#contentRow .col").map(function(col_index, column) {
+                    var colspan = $(column).attr("_colspan");
+                    $(column).children().map(function(row_index, item) {
+                        var name = $(item).attr("_name")
+                        content.push(['content', name, row_index+1, col_index+1])
+                    })
+                })                
+
+                var data = {
+                    'layout': current_content_layout,
+                    'digital' : digital,
+                    'content' : content
                 }
-            }).disableSelection();    
+                data = JSON.stringify(data)
+                return data
 
-            var remove_handler = function(){
-                debugger;
-                var box = $(this).parents(".digital-pane").first();
-                box.slideUp();
-                id = box.attr("id").replace("dpane-", "")
+            }
 
-                var new_digital_panes = []
-                for(var i=0; i<digital_panes.length; i++) {
-                    if(digital_panes[i].id != id) {
-                        new_digital_panes.push(digital_panes[i])
+            var refresh_digital_row = function() {
+                dashboard.render($("#digitalRow"), "digital_tmpl", {'digital': digital_def});
+                $("#digitalRow").sortable({
+                    placeholder: "sort-highlight col-xs-1 digital-pane",
+                    handle: ".box-header, .nav-tabs",
+                    zIndex: 999999,
+                    update: function(event, ui) {
+                        digital_def = get_digital_def_from_tags()
+                    }
+                }).disableSelection();                   
+            }
+
+            var refresh_content_row = function () {
+                dashboard.render($("#contentRow"), "content_tmpl", {'content': content_def});
+
+                $(".layout-column").sortable({
+                    placeholder: "sort-highlight",
+                    connectWith: ".layout-column",
+                    handle: ".box-header, .nav-tabs",
+                    forcePlaceholderSize: true,
+                    zIndex: 999999,
+                    update: function(event, ui) {
+                        content_def = get_content_def_from_tags()
+                    }
+                }).disableSelection();                    
+            }
+
+            var refresh_digital_list = function() {
+                var data = {
+                    'all_digital': all_digital_def,
+                    'digital': digital_def
+                }
+                dashboard.render($("#digitalList"), "digital_list_tmpl", data);
+            }
+
+
+            var refresh_content_list = function() {
+                var data = {
+                    'all_content': all_content_def,
+                    'content': content_def,
+                    'layout': layout_def,
+                    'current_layout': current_content_layout
+                }
+                dashboard.render($("#contentList"), "content_list_tmpl", data);
+            }            
+
+            var get_pane = function(name, paneList) {
+                for(var i=0; i<paneList.length; i++) {
+                    if(paneList[i].name == name) {
+                        return paneList[i]
                     }
                 }
+                return false
+            }
 
-                digital_panes = new_digital_panes
-                utils.refresh_digital_panes(digital_panes, $("#digital-row"), template)
+            var update_colspan = function(pane_def, new_layout) {
+                cols = new_layout.split("-")
+
+                if(cols.length>=pane_def.length) {
+                    for(var i=0; i<cols.length; i++) {
+                        if(i < pane_def.length) {
+                            pane_def[i].colspan = cols[i]
+                        } else {
+                            pane_def.push({'colspan': cols[i], panes: []})
+                        }
+                    }
+
+                    return pane_def
+                } else {
+                    var new_pane_def = [];
+                    for(var i=0; i<pane_def.length; i++) {
+                        pane_def[i].colspan = cols[i]
+                        if(i < cols.length) {
+                            new_pane_def.push(pane_def[i])
+                        } else {
+                            panes = pane_def[i].panes
+                            new_pane_def[0].panes.concat(panes)
+                        }
+                    }
+
+                    return new_pane_def
+                }
+                
+            }
+
+            refresh_digital_row();
+            refresh_content_row();
+            refresh_digital_list();
+            refresh_content_list();
+
+            var remove_handler = function(){
+                var box = $(this).parents(".digital-pane").first();
+                var id = box.attr("id").replace("dpane-", "")
+
+
+                box.slideUp(function(){
+                    var new_digital_def = []
+                    for(var i=0; i<digital_def.length; i++) {
+                        var panes = digital_def[i].panes;
+                        var deleted = false;
+                        for(var j=0; j<panes.length; j++) {
+                            if(panes[j].name == id) {
+                                deleted = true;
+                            }
+                        }
+                        if(!deleted) {
+                            new_digital_def.push(digital_def[i])
+                        }
+                    }
+
+                    var new_colspan = dashboard.calc_digital_colspan(new_digital_def.length)
+                    for(var i=0; i<new_digital_def.length; i++) {
+                        new_digital_def[i].colspan = new_colspan;
+                    }                
+
+                    digital_def = new_digital_def;
+                    refresh_digital_row();
+                    refresh_digital_list()
+                    
+                });
             } 
 
-            $("#digital-row").delegate("[data-widget='remove-digital']", "click", remove_handler)
-            utils.refresh_digital_panes(digital_panes, $("#digital-row"), template)
+            var remove_content_handler = function() {
+                var box = $(this).parents(".content-pane").first();
+                var id = box.attr("id").replace("cpane-", "")
 
-            
+                box.slideUp(function(){
+                    for(var i=0; i<content_def.length; i++) {
+                        var panes = content_def[i].panes;
+                        var newpanes = []
+                        for(var j=0; j<panes.length; j++) {
+                            if(panes[j].name != id) {
+                                newpanes.push(panes[j])
+                            }
+                        }
+                        content_def[i].panes = newpanes;
+                    }
+
+                    refresh_content_row();
+                    refresh_content_list();
+                    
+                });
+            }
+
+            var add_handler = function() {
+                var box = $(this).parents(".dpane-item").first();
+                var id = box.attr("id").replace("dpane-u-", "")   
+
+                var pane = get_pane(id, all_digital_def);
+
+                if(pane !== false) {
+                    digital_def.push({'colspan': 0, 'panes': [pane]})
+                    var new_colspan = dashboard.calc_digital_colspan(digital_def.length)
+                    for(var i=0; i<digital_def.length; i++) {
+                        digital_def[i].colspan = new_colspan;
+                    }                          
+
+                    refresh_digital_row();
+                    refresh_digital_list();
+                }
+            }
+
+            var add_content_handler = function() {
+                var box = $(this).parents(".cpane-item").first();
+                var id = box.attr("id").replace("cpane-u-", "")   
+
+                var pane = get_pane(id, all_content_def);
+
+                if(pane !== false) {
+                    content_def[0].panes.push(pane)
+                    refresh_content_row();
+                    refresh_content_list();
+                }
+            }            
+
+            var layout_change_handler = function() {
+
+                current_content_layout = $(this).val()
+
+                content_def = update_colspan(content_def, current_content_layout)
+                refresh_content_row();
+                refresh_content_list();
+            }
+
+            $("#digitalRow").delegate("[data-widget='remove-digital']", "click", remove_handler)
+            $("#digitalList").delegate(".btn", "click", add_handler)
+
+            $("#contentRow").delegate("[data-widget='remove-content']", "click", remove_content_handler)
+            $("#contentList").delegate(".btn", "click", add_content_handler)
+            $("#contentList").delegate("select", "change", layout_change_handler)
+
+            $("#btnSaveDashboard").click(function(e){
+                var data = get_save_data()
+                if(window.save_dashboard_layout) {
+                    save_dashboard_layout(data)
+                }
+            })
+
+            window.__get_save_data__ = function() {
+                return get_save_data()
+            }
+
         });
     });
 </script>
