@@ -31,7 +31,7 @@ class MockView(object):
     def iframe(self):
         return {}
 
-    def html_snippet(self):
+    def html(self):
         return {}
 
     def json_object(self):

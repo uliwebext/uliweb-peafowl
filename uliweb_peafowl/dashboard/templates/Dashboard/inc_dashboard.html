@@ -1,51 +1,124 @@
+<div id="digitalRow" class="row"></div>
+<div id="contentRow" class="row"></div>
 
-<div class="row">
-{{ for panes in digital: }}
-<div class="col-xs-{{=panes.get('colspan')}}">
-    {{ for pane in panes.get('panels'): }}
-    <div class="small-box bg-{{=pane.color}}">
-        <div class="inner">
-            <h3>
-                {{=pane.num}}
-                <sup style="font-size: 20px">{{=pane.unit}}</sup>
-            </h3>
-            <p>{{=pane.description}}</p>
-        </div>
-        <div class="icon">
-            <i class="fa {{=pane.icon}}"></i>
-        </div>
-        <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
-    </div>
-    {{ pass }}
-</div>    
-{{pass}}
-</div>
+<style>
+    #contentRow .ajax_content {width:100%;height:100%;border:1px solid #ddd;overflow:scroll;}
+    #contentRow iframe {width:100%;height:100%;border:1px solid #ddd}
+</style>
 
-<div class="row">
-    {{for panes in content:}}
-        <section class="col-lg-{{=panes.get('colspan')}} layout-column ui-sortable">
-            {{ for pane in panes.get('panels'): }}
-                <div class="box box-success portlet">
-                    <div class="box-header ui-sortable-handle" style="cursor: move;">
-                        <i class="fa fa-list"></i>
-                        <h3 class="box-title">{{=pane.title}}</h3>
-                    </div>
-                    <div class="box-body" style="overflow: hidden; width: auto; height: {{=pane.height}}px;">
-                    {{if pane.content_type == '0':}}
-                    <iframe src="{{=pane.URI}}" style="width:100%;height:100%;border:1px solid #ccc"></iframe>
-                    {{pass}}
+<script type="text/html" id="digital_tmpl">
+<% for ( var i = 0; i < digital.length; i++ ) { %>
+    
+    <div class="col-xs-<%=digital[i].colspan%>">
+        <% var panes = digital[i].panes; %>
 
-                    </div>
+        <% for ( var j = 0; j < panes.length; j++ ) { %>
+            <div class="small-box bg-<%=panes[j].color%>">
+                <div class="inner">
+                    <h3>
+                        <%=panes[j].num%>
+                        <sup style="font-size: 20px"> 
+                            <%=panes[j].unit%> 
+                        </sup>
+                    </h3>
+                    <p>
+                        <%=panes[j].description%>
+                    </p>
                 </div>
-            {{ pass }}
-        </section>
-    {{pass}}
-</div>
+                <div class="icon">
+                    <i class="fa <%=panes[j].icon%>"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+        <% } %>
+
+    </div>    
+
+<% } %>
+</script>
+
+<script type="text/html" id="content_tmpl">
+<% for ( var i = 0; i < content.length; i++ ) { %>
+    <section class="col-lg-<%=content[i].colspan%> connectedSortable layout-column ui-sortable">
+        <% var panes = content[i].panes; %>
+
+        <% for ( var j = 0; j < panes.length; j++ ) { %>
+
+            <% var box_id = dashboard.get_boxid(); %>
+
+            <div class="box box-info portlet">
+                <div class="box-header ui-sortable-handle" style="cursor: move;">
+                    <i class="fa fa-list"></i>
+                    <h3 class="box-title"><%=panes[j].title%></h3>
+                </div>
+                <div class="box-body" id="<%=box_id%>"
+                    style="overflow: hidden; width: auto; height: <%=panes[j].height%>px;">
+
+                <% if(panes[j].content_type == '0') { %>
+                    <iframe src="<%=panes[j].uri%>"></iframe>
+                <% } %>
+
+                <% if(panes[j].content_type == '1') { %>
+                    <div class="ajax_content"></div>
+                <%    dashboard.ajax_content_loading(panes[j].uri, "#"+box_id + " .ajax_content"); %>
+                <% } %>
+                </div>
+            </div>
+        <% } %>
+    </section>
+<% } %>
+</script>
+
+
+
+<script type="text/javascript">
+
+var content_def = [];
+ {{for colums in content:}}
+    var colspan = '{{=colums.get('colspan')}}';
+    var panes = [];
+    {{ for pane in colums.get('panels'): }}
+        var pane = {}
+        pane.title = '{{=pane.title}}';
+        pane.content_type = '{{=pane.content_type}}';
+        pane.uri = '{{=pane.URI}}';
+        pane.height = '{{=pane.height}}';
+        panes.push(pane)
+    {{ pass }}
+
+    content_def.push({'colspan': colspan, 'panes': panes});
+{{ pass }}
+
+var digital_def = [];
+{{ for colums in digital: }}
+    var colspan = '{{=colums.get('colspan')}}';
+    var panes = [];
+    {{ for pane in colums.get('panels'): }}
+        var pane = {}
+        pane.color = '{{=pane.color}}';
+        pane.num = '{{=pane.num}}';
+        pane.unit = '{{=pane.unit}}';
+        pane.description = '{{=pane.description}}';
+        pane.icon = '{{=pane.icon}}';
+        panes.push(pane)
+    {{ pass }}
+
+    digital_def.push({'colspan': colspan, 'panes': panes});
+{{ pass }}
+
+</script>
+
 
 <script type="text/javascript">
     $(function(){
 
-        require(["app/dashboard"], function(){
+        require(["app/dashboard"], function(utils){
+
+            var dashboard = new utils.Dashboard();
+
+            dashboard.render($("#digitalRow"), "digital_tmpl", {'digital': digital_def})
+            dashboard.render($("#contentRow"), "content_tmpl", {'content': content_def})
+
             $(".layout-column").sortable({
                 placeholder: "sort-highlight",
                 connectWith: ".layout-column",
