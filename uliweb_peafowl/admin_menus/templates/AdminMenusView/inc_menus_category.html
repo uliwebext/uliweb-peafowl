@@ -1,0 +1,22 @@
+<div class="box box-warning">
+    <div class="box-header with-border">
+        <span class="box-title">{{=_('Categories')}}</span>
+        <!-- tools box -->
+        <div class="pull-right box-tools">
+            <button class="btn btn-box-tool" data-toggle="tooltip" data-original-title="{{=_('Add')}}"><i class="fa fa-plus"></i></button>
+        </div><!-- /. tools -->
+    </div>
+    <div class="box-body">
+        <ul class="nav nav-pills nav-stacked" id="menu-category-list" ms-controller="menus_category">
+            <li ms-repeat="categories">
+                <a href="#"><i class="fa fa-reorder"></i>{%el.title%}</a>
+            </li>
+        </ul>
+    </div>
+</div>
+<script>
+    var menus_category = avalon.define({
+        $id:'menus_category',
+        categories: {{<< json_dumps('categories')}}
+    });
+</script>
