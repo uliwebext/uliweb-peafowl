@@ -150,6 +150,9 @@ input[type="file"].form-control {border:none;background-color:transparent;line-h
 
 /* webui popover fix */
 .webui-popover-content .form-group {margin-left:0;margin-right:0;}
+.webui-popover-content form .row {margin-left: 0;margin-right: 0;}
+.webui-popover-content form [class*=col]:first-child {padding-left:0;}
+.webui-popover-content form [class*=col]:last-child {padding-right:0;}
 
 /* Toastr custom style */
 #peafowl-body #toast-container > .toast {
