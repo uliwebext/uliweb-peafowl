@@ -31,6 +31,7 @@
 <button id="btnShowPopup2" class="btn btn-default">Show Popup Hover</button>
 <button id="btnShowPopup3" class="btn btn-default">Show Popup Dialog</button>
 <button id="btnShowPopup4" class="btn btn-default">Show Login Dialog</button>
+<button id="btnShowPopup5" class="btn btn-default">Use Popup_URL</button>
 <script>
     require(['popover'], function(){
         $('#btnShowPopup1').webuiPopover({content:'Content'});
@@ -67,6 +68,8 @@
             padding:true,
             closeable:true,
             type:'async', url:'/library_demo/bs3login_ajax', delay:50});
+
+            popup_url('#btnShowPopup5', '/library_demo/bs3login_ajax', 'Login');
     });
 </script>
 {{end}}

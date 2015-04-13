@@ -1,0 +1,38 @@
+{{extend "admin_layout.html"}}
+
+{{block sidemenu}}
+    {{<< functions.menu('ADMIN', 'admin_menus')}}
+{{end}}
+
+{{block sidebar_page_title}}
+    {{=_('Menus')}}
+{{end}}
+
+{{block sidebar_page_subtitle}}
+    {{=_('add, edit and remove menus')}}
+{{end}}
+
+{{block custom_css}}
+{{end}}
+
+{{block sidebar_breadcrumb}}
+<ol class="breadcrumb">
+    <li><a href="/"><i class="fa fa-dashboard"></i>{{=_('Home')}}</a></li>
+    <li><a href="{{=ADMIN_URL}}">{{=_('Admin')}}</a></li>
+    <li><a href="{{=ADMIN_URL}}/menus" class="active">{{=_('Menus')}}</a></li>
+
+</ol>
+{{end}}
+
+{{block main_content}}
+{{use "avalon"}}
+{{link "<script>avalon.config({loader:false});</script>"}}
+
+<div id="admin-models" class="row">
+    <div class="col-md-3 col-sm-4">
+        {{include "AdminMenusView/inc_menus_category.html"}}
+    </div>
+    <div class="col-md-9 col-sm-8">
+    </div>
+</div>
+{{end}}
