@@ -7,19 +7,26 @@ from uliweb.utils.generic import GenericReference
 def get_modified_user():
     from uliweb import request
 
-    return request.user.id
+    if request:
+        return request.user.id
 
 
 class DashBoard(Model):
     __verbose_name__ = u'仪表盘布局'
 
-    # dashboard_type = GenericReference(object_fieldname='dashboard_type', table_fieldname='dashboard_type_id')
-    # entity = GenericReference(object_fieldname='entity', table_fieldname='entity_id')
-    name = Field(CHAR, max_length=50, verbose_name='仪表盘名称')
-    layout = Field(CHAR, max_length=1, choices=get_var('DASHBOARD/DASHBOARD_LAYOUT'), verbose_name='布局')
-    panel_type = Field(CHAR, max_length=1, choices=get_var('DASHBOARD/PANEL_TYPE'),
-                       verbose_name='面板类型')
-    default = Field(bool, verbose_name='默认标识', default=False)
+    name = Field(CHAR, max_length=50, verbose_name='仪表盘名称', unique=True)
+    layout = Field(CHAR, max_length=50, verbose_name='布局')
+    # panel_type = Field(CHAR, max_length=1, choices=get_var('DASHBOARD/PANEL_TYPE'),
+    # verbose_name='面板类型')
+    created_time = Field(
+        datetime.datetime, verbose_name='创建时间', auto_now_add=True)
+    created_user = Reference(
+        'user', verbose_name='创建人', default=get_modified_user, auto_add=True)
+
+    modified_time = Field(
+        datetime.datetime, verbose_name='修改时间', auto_now_add=True, auto_now=True)
+    modified_user = Reference(
+        'user', verbose_name='修改人', default=get_modified_user, auto=True, auto_add=True)
 
     def __unicode__(self):
         return self.name
@@ -28,7 +35,7 @@ class DashBoard(Model):
 class Panel(Model):
     __verbose_name__ = u'内容面板'
 
-    name = Field(CHAR, max_length=50, verbose_name='名称')
+    name = Field(CHAR, max_length=50, verbose_name='名称', unique=True)
     title = Field(CHAR, max_length=100, verbose_name='显示名称')
     description = Field(CHAR, max_length=100, verbose_name='描述')
     num = Field(int, verbose_name='数量')
@@ -44,6 +51,19 @@ class Panel(Model):
     icon = Field(CHAR, max_length=20, verbose_name='图标')
     closeable = Field(bool, verbose_name='关闭标识')
 
+    panel_type = Field(CHAR, max_length=1, choices=get_var('DASHBOARD/PANEL_TYPE'),
+                       verbose_name='面板类型')
+
+    created_time = Field(
+        datetime.datetime, verbose_name='创建时间', auto_now_add=True)
+    created_user = Reference(
+        'user', verbose_name='创建人', default=get_modified_user, auto_add=True)
+
+    modified_time = Field(
+        datetime.datetime, verbose_name='修改时间', auto_now_add=True, auto_now=True)
+    modified_user = Reference(
+        'user', verbose_name='修改人', default=get_modified_user, auto=True, auto_add=True)
+
     def __unicode__(self):
         return self.title
 
@@ -51,7 +71,26 @@ class Panel(Model):
 class PanelLayout(Model):
     __verbose_name__ = u'面板布局'
 
+    dashboard_type = GenericReference(object_fieldname='dashboard_type_id', table_fieldname='dashboard_type_table')
     dashboard = Reference('dashboard', verbose_name='仪表盘')
+    layout = Field(CHAR, max_length=1, choices=get_var('DASHBOARD/DASHBOARD_LAYOUT'), verbose_name='布局')
+
     panel = Reference('panel', verbose_name='面板')
+    title = Field(CHAR, max_length=100, verbose_name='显示名称')
+    color = Field(CHAR, max_length=20, verbose_name='颜色')
+    height = Field(int, verbose_name='高度')
+    icon = Field(CHAR, max_length=20, verbose_name='图标')
     row = Field(int, verbose_name='行位置')
     col = Field(int, verbose_name='列位置')
+
+    default = Field(bool, verbose_name='默认标识', default=False)
+
+    created_time = Field(
+        datetime.datetime, verbose_name='创建时间', auto_now_add=True)
+    created_user = Reference(
+        'user', verbose_name='创建人', default=get_modified_user, auto_add=True)
+
+    modified_time = Field(
+        datetime.datetime, verbose_name='修改时间', auto_now_add=True, auto_now=True)
+    modified_user = Reference(
+        'user', verbose_name='修改人', default=get_modified_user, auto=True, auto_add=True)

@@ -29,17 +29,26 @@ def import_mock_data():
         layout['panel'] = panel.get(panel.c.name == pane)
         layout['row'] = row
         layout['col'] = col
+        layout['default'] = True
         obj = panellayout(**layout)
         obj.save()
+    for data in settings.PANEL_DASHBOARD_MOCKDATA.layout1:
+        data['dashboard'] = dashboard.get(dashboard.c.name == data['dashboard'])
+        data['panel'] = panel.get(panel.c.name == data['panel'])
+        data['default'] = False
+        obj = panellayout(**data)
+        obj.save()
+
 
 def clear_mock_data():
     dashboard = functions.get_model('dashboard')
     panel = functions.get_model('panel')
     panellayout = functions.get_model('panellayout')
 
-    dashboard.remove()    
+    dashboard.remove()
     panel.remove()
     panellayout.remove()
+
 
 def process():
     clear_mock_data()
