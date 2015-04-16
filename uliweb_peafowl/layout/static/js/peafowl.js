@@ -1,4 +1,4 @@
-var show_message = function(message, category){
+function show_message(message, category){
 
     require(["jqtoastr"], function(toastr){
         category = category || "success"
@@ -39,6 +39,7 @@ function popup_url(target, options, title, callback){
     if (typeof options === 'string'){
         opts = {url:options, title:title || ''};
     }else opts = options;
+    callback = callback || options.callback;
 
     var d = {
         content:function(data){
@@ -72,7 +73,18 @@ function popup_url(target, options, title, callback){
     require(['popover'], function(){
         var o = $.extend({}, d, opts);
         $(target).webuiPopover(o);
+        if (o.show)
+            $(target).webuiPopover('show');
     });
+}
+
+function show_popup_url(target, options, title, callback){
+    var opts;
+    if (typeof options === 'string'){
+        opts = {url:options, title:title || ''};
+    }else opts = options;
+    opts.show = true;
+    popup_url(target, opts, title, callback);
 }
 
 /*
@@ -107,7 +119,7 @@ function common_ajax_submit(target, validator){
  *    messages
  *    ajax_submit
  */
-var do_submit = function(target, options) {
+function validate_submit(target, options) {
     var default_options = {
         rules:{},
         messages:{},

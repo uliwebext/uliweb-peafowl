@@ -1,6 +1,6 @@
 {{<< form}}
 <script>
-    do_submit('#{{=form.form_id}}', {
+    validate_submit('#{{=form.form_id}}', {
         rules:{{=json_dumps(form.front_rules['rules'])}},
         messages:{{=json_dumps(form.front_rules['messages'])}},
     });

@@ -11,8 +11,19 @@
     </div>
     <div class="box-body" ms-controller="menus_category">
         <ul class="nav nav-pills nav-stacked" id="menu-category-list">
-            <li ms-repeat="categories">
-                <a href="#"><i class="fa fa-reorder"></i>{%el.title%}({%el.key%})</a>
+            <li ms-repeat="categories" style="position:relative;"
+                     ms-mouseenter="show_tools" ms-mouseleave="hide_tools">
+                <a href="#">
+                    <i class="fa fa-reorder"></i>{%el.title%}({%el.key%})
+                </a>
+                <div class="buttons" style="position:absolute;right:2px;bottom:2px;display:none;">
+                    <button class="btn btn-box-tool" ms-click="remove(el, $remove)">
+                        <i class="fa fa-remove"></i>
+                    </button>
+                    <button class="btn btn-box-tool" ms-click="edit(el)">
+                        <i class="fa fa-edit"></i>
+                    </button>
+                </div>
             </li>
         </ul>
     </div>
@@ -20,10 +31,37 @@
 <script>
     var menus_category = avalon.define({
         $id:'menus_category',
-        categories: {{<< json_dumps(categories)}}
+        categories: {{<< json_dumps(categories)}},
+        show_tools: function(){
+            var that = $(this);
+            that.find('.buttons').fadeIn();
+        },
+        hide_tools: function(){
+            var that = $(this);
+            that.find('.buttons').fadeOut();
+        },
+        remove: function(el, $remove){
+            $.post('/admin/menus/remove_category/'+el.id).success(function(r){
+                $remove();
+            }).fail(function(xhr){
+                show_message('Remove error', 'error');
+            });
+        },
+        edit: function(el){
+            show_popup_url(this, '/admin/menus/edit_category/'+el.id, 'Edit Category', function(data){
+                for(var i=0, _len=menus_category.categories.length; i<_len; i++){
+                    if (menus_category.categories[i].id == data.data.id){
+                        menus_category.categories.set(i, data.data);
+                    }
+                }
+            });
+        },
+        add: function(item){
+            this.categories.push(item);
+        }
     });
     popup_url('#btnAddCategory', '{{=url_for('add_category')}}',
         '{{=_('Add Category')}}', function(data){
-            console.log(data);
+            menus_category.add(data.data);
         });
 </script>
