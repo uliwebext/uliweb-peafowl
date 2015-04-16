@@ -1,42 +1,47 @@
 # coding=utf-8
 from uliweb import functions, settings
+from uliweb import orm
 
 DIGITAL = '0'
 CONTENT = '1'
 
 
 class Dashboard(object):
-    def __init__(self, entity=None, default=True):
-        self.panel = functions.get_model('panel')
-        self.dashboard = functions.get_model('dashboard')
-        self.panellayout = functions.get_model('panellayout')
-        self.entity = entity
-        self.default = default
-
-    def _get_condition(self, dashboardname):
-        condition = (self.panellayout.c.default == self.default)
-
-        obj = self.dashboard.get(self.dashboard.c.name == dashboardname)
-        condition = (self.panellayout.c.dashboard == obj.id) & condition
-
-        if self.entity:
-            condition = (self.panellayout.c.dashboard_type == self.entity) & condition
-        return condition
-
-    def _get_layout(self, dashboardname):
-        panellayout = self.panellayout.get(self._get_condition(dashboardname))
-        return panellayout.layout or panellayout.dashboard.layout
-
+    def __init__(self, digital_name, content_name, entity=None):
+        self.panel = functions.get_model('dashboardpanel')
+        self.layout = functions.get_model('dashboardpanellayout')
+        self.digital_name = digital_name
+        self.content_name = content_name
+        if isinstance(entity, (tuple, list)) or isinstance(entity, orm.Model):
+            self.entity = entity
+        else:
+            self.entity = None
 
     def _get_panels(self, dashboardname):
+        res = self.layout.filter(self.layout.c.dashboard_name == dashboardname)
+        if self.entity:
+            return res.filter(self.entity)
+        return res
+
+
+    def _get_layout(self, dashboardname):
+        panellayout = self._get_panels(dashboardname).one()
+        return panellayout.layout
+
+    def _get_old_panels(self, dashboardname):
+        panels = self._get_panels(dashboardname)
+        return [panel.panel._name_ for panel in panels]
+
+    def _get_sorted_panels(self, dashboardname):
 
         layout = self._get_layout(dashboardname).split('-')
 
         grids = []
+
         for index, colspan in enumerate(layout):
-            cond = (self.panellayout.c.col == index + 1) & self._get_condition(dashboardname)
+            cond = (self.layout.c.col == index + 1)
             panels = []
-            for obj in self.panellayout.filter(cond).order_by(self.panellayout.c.row):
+            for obj in self._get_panels(dashboardname).filter(cond).order_by(self.layout.c.row):
                 panel = obj.panel
                 if obj.title:
                     panel.title = obj.title
@@ -47,8 +52,8 @@ class Dashboard(object):
                 if obj.color:
                     panel.color = obj.color
                 panels.append(panel)
-
             grids.append({'colspan': colspan, 'panels': panels})
+
         return grids
 
     def _get_all_panels(self, panel_type):
@@ -69,10 +74,10 @@ class Dashboard(object):
         return options
 
     def get_digital_panes(self):
-        return self._get_panels('digital')
+        return self._get_sorted_panels(self.digital_name)
 
     def get_content_panes(self):
-        return self._get_panels('content')
+        return self._get_sorted_panels(self.content_name)
 
     def get_view(self):
         return {
@@ -90,30 +95,48 @@ class Dashboard(object):
             'current_content_layout': self._get_layout('content')
         }
 
+    def _diff_panel(self, old_panels, new_panels):
+        list(set(old_panels) - set(new_panels))
 
-    def _save_panel(self, panels, layout):
+    def _save_panel(self, dashboardname, panels, layout):
+
+        def _get_panel(name):
+            panel = self.panel.get(self.panel.c.name == name)
+            panellayout = self._get_panels(dashboardname).filter(self.layout.c.panel == panel.id).one()
+            return panellayout, panel
+
+        new_panels = []
         for pane in panels:
             dashboard, name, row, col = pane
-            dashboard = self.dashboard.get(self.dashboard.c.name == dashboard)
-            panel = self.panel.get(self.panel.c.name == name)
-            panellayout = self.panellayout.get(self.panellayout.c.dashboard == dashboard,
-                                               self.panellayout.c.panel == panel, self.panellayout.c.default == False)
+            new_panels.append(name)
 
+            panellayout, panel = _get_panel(name)
             if panellayout:
+                panellayout.dashboard_owner = self.entity
                 panellayout.row = row
                 panellayout.col = col
                 panellayout.layout = layout
-                panellayout.default = False
                 panellayout.save()
             else:
-                panellayout = panellayout(dashboard=dashboard, panel=panel, row=row, col=col, layou=layout,
-                                          default=False)
+                panellayout = self.layout(dashboardname=dashboardname, dashboard_type=self.entity,
+                                          panel=panel.id, row=row, col=col, layout=layout)
                 panellayout.save()
 
+        for name in list(set(self._get_old_panels(dashboardname)) - set(new_panels)):
+            panellayout, panel = _get_panel(name)
+
+            if panellayout:
+                panellayout.delete()
+
     def save(self, data):
-        digital_panels = data['digital']
-        content_panels = data['content']
-        layout = data['current_content_layout']
-        self._save_panel(digital_panels, layout)
-        self._save_panel(content_panels, layout)
+        """
+        :param data: data to save
+        :param default: entity related default is False, admin config default is True
+        :return:
+        """
+        digital_panels = data.get(self.digital_name, '')
+        content_panels = data.get(self.content_name, '')
+        layout = data.get('layout', '')
+        self._save_panel(self.digital_name, digital_panels, '3-' * len(digital_panels))
+        self._save_panel(self.content_name, content_panels, layout)
 

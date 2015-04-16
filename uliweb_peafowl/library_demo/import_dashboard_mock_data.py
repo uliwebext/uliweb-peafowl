@@ -11,41 +11,30 @@ set_dispatch_send(False)
 
 
 def import_mock_data():
-    dashboard = functions.get_model('dashboard')
-    panel = functions.get_model('panel')
-    panellayout = functions.get_model('panellayout')
+    panel = functions.get_model('dashboardpanel')
+    panellayout = functions.get_model('dashboardpanellayout')
 
-    for data in settings.DASHBOARD_MOCKDATA.dashboards:
-        obj = dashboard(**data)
-        obj.save()
     for data in settings.PANEL_MOCKDATA.panels:
         obj = panel(**data)
         obj.save()
 
     for data in settings.PANEL_DASHBOARD_MOCKDATA.layout:
-        board, pane, row, col = data
+        board, panel_layout, pane, row, col = data
         layout = {}
-        layout['dashboard'] = dashboard.get(dashboard.c.name == board)
+
+        layout['dashboard_name'] = board
         layout['panel'] = panel.get(panel.c.name == pane)
         layout['row'] = row
         layout['col'] = col
-        layout['default'] = True
+        layout['layout'] = panel_layout
         obj = panellayout(**layout)
-        obj.save()
-    for data in settings.PANEL_DASHBOARD_MOCKDATA.layout1:
-        data['dashboard'] = dashboard.get(dashboard.c.name == data['dashboard'])
-        data['panel'] = panel.get(panel.c.name == data['panel'])
-        data['default'] = False
-        obj = panellayout(**data)
         obj.save()
 
 
 def clear_mock_data():
-    dashboard = functions.get_model('dashboard')
-    panel = functions.get_model('panel')
-    panellayout = functions.get_model('panellayout')
+    panel = functions.get_model('dashboardpanel')
+    panellayout = functions.get_model('dashboardpanellayout')
 
-    dashboard.remove()
     panel.remove()
     panellayout.remove()
 
