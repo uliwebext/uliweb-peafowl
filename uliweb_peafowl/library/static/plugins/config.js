@@ -38,7 +38,8 @@ requirejs.config({
         "jqdialog2-helper" : "jquery.dialog2/jquery.dialog2.helpers",
         "jqvalidation"     : '_jquery.validation/jquery.validate.min',
         "jqvalidation_zh"  : '_jquery.validation/localization/messages_zh.min',
-        "jqtoastr"         : 'jquery.toastr/toastr.min',  
+        "jqtoastr"         : 'jquery.toastr/toastr.min',
+        "jqtimepicker"     : '_jquery.timepicker/jquery-ui-timepicker-addon'
 
     },
     "shim": {
@@ -85,7 +86,15 @@ requirejs.config({
         },
         "webuploader":{
             deps: ['css!_webuploader/webuploader.css']
-        }
+        },
+        "jqtimepicker": {
+            deps: [
+                "css!_jquery.timepicker/jquery-ui-timepicker-addon",
+                "_jquery.timepicker/jquery-ui-sliderAccess"
+            ],
+            exports: 'jQuery.fn.datetimepicker'
+        },
+
     },
     urlArgs: get_static_version()
 });

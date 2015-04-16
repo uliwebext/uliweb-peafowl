@@ -1,3 +1,10 @@
+/*
+ * show message on top center of window
+ *
+ * options:
+ *    message
+ *    category
+ */
 function show_message(message, category){
 
     require(["jqtoastr"], function(toastr){
@@ -126,7 +133,7 @@ function validate_submit(target, options) {
         ajax_submit:common_ajax_submit
     }
 
-    var opts = $.extend({}, default_options, options);
+    var opts = $.extend(true, {}, default_options, options);
 
     require(['jqvalidation'], function(){
         var form = $(target);
@@ -154,5 +161,46 @@ function validate_submit(target, options) {
             }
         });
 
+    });
+}
+
+/*
+ * replace current form wedgits to sepcified js wedgits
+ * options:
+ *    target: target form element
+ */
+
+var widgets_mapping = {
+    date: function(el, options){
+        var opts = {dateFormat: 'yy-mm-dd'};
+        $.extend(true, opts, options || {});
+        $(el).datepicker(opts);
+    },
+    select2: function(el, opts){
+        require(['select2'], function(select2){
+            $(el).select2(opts||{});
+        });
+    },
+    datetime: function(el, options){
+        require(['jqtimepicker'], function(datetimepicker){
+            var opts = {dateFormat: 'yy-mm-dd'};
+            $.extend(true, opts, options || {});
+            $(el).datetimepicker(opts);
+        });
+    }
+}
+
+function form_widgets(target, options){
+    var form = $(target);
+    var _type, element, opts, func, param;
+    opts = $.extend(true, {}, widgets_mapping, options||{});
+    form.find('[widget]').each(function(index, el){
+        element = $(el);
+        _type = element.attr('widget');
+        param = eval('('+element.attr('options')+')');
+        func = opts[_type];
+        if (func){
+            func(element, param);
+        }
     });
 }

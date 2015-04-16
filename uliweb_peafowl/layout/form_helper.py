@@ -26,7 +26,8 @@ class Bootstrap3_Build(object):
             _attrs['id'] = field.id
         _attrs['name'] = fieldname
         _attrs['class'] = (_attrs.setdefault('class', '') + ' %s' % self.input_class).strip()
-        _attrs['widget'] = _attrs.get('widget') or field.type_name
+        _attrs['data_type'] = _attrs.get('data_type') or field.type_name
+        _attrs['widget'] = kwargs.get('widget', _attrs['data_type'])
 
         self.label_width = label_width
         self.kwargs = kwargs

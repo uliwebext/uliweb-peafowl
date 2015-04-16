@@ -361,3 +361,24 @@ class LibraryDemoView(object):
         form = form_cls(id='login_form')
 
         return self._run_form(form, 'form_login_ajax', 'Form Login Ajax', ajax=True)
+
+    def bs3tlayout_widgets(self):
+        from uliweb.form import make_form
+
+
+        f = self._make_form()
+        f['layout_class'] = 'bs3t'
+        f['layout']['rows'] = self._get_layout2()
+        f['layout']['readonly'] = False
+        f['layout']['fields']['date'] = {'attrs':{'options':{
+                'dateFormat':
+                    'yy-mm-dd'}}}
+        f['layout']['fields']['select1'] = {'widget':'select2'}
+        f['layout']['fields']['select2'] = {'widget':'select2'}
+        form_cls = make_form(**f)
+
+        data = self._make_data()
+        form = form_cls(data=data)
+
+        response.template = 'LibraryDemoView/bs3form_widgets.html'
+        return self._run_form(form, 'form_tlayout_widgets', 'Form Widgets')
