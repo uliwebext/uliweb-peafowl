@@ -10,6 +10,7 @@ introduction.md
 dev/getstart.md
 dev/admin.md
 dev/form_helper.md
+dev/peafowl_js.md
 {% endtoc %}
 
 ## 变更说明

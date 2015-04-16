@@ -115,3 +115,22 @@ rows有几种定义方式：
 
 在fields中，key为要定义的字段名，值为相应的显示相关的属性，具体属性值参见上面的字段元素的定义
 除了'name'之外的内容。
+
+## Form前端校验及Ajax提交
+
+在 Uliweb-peafowl 中提供常见功能的前端校验功能，通过调用 `validate_submit` 函数，它将
+完成前端校验及ajax提交两个处理。
+
+代码示例如下：
+
+    {{<< form}}
+    <script>
+        validate_submit('#{{=form.form_id}}', {
+            rules:{{=json_dumps(form.front_rules['rules'])}},
+            messages:{{=json_dumps(form.front_rules['messages'])}},
+        });
+    </script>
+
+`form` 为view中传入的form对象。通过 `form.form_id` 可以得到它的id，用于 validate_submit 中
+进行事件绑定。 `form.front_rules['rules']` 可以得到 rules 信息。  `form.front_rules['messages']`
+可以得到 messages 信息。
