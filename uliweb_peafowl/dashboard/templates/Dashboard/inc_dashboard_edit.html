@@ -1,4 +1,4 @@
-
+﻿
 <style>
     .dashboard-pane {border:1px solid #eee;
         background-color: #aaa;padding:10px;
@@ -473,6 +473,7 @@ var current_content_layout = "{{=current_content_layout}}";
 
             $("#btnSaveDashboard").click(function(e){
                 var data = get_save_data()
+
                 if(window.save_dashboard_layout) {
                     save_dashboard_layout(data)
                 }
