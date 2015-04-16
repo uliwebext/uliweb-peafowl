@@ -29,7 +29,6 @@ requirejs.config({
         "mmtreegrid"       : '_mmgrid/mmTreeGrid',
         "select2"          : '_select2/select2',
         "adminLTE"         : "app/adminLTE",
-        "pnotify"          : '_pnotify/pnotify.min',
         "bootstrap-dialog" : '_bootstrap3.dialog/bootstrap-dialog.min',
         "popover"          : '_webui_popover/jquery.webui-popover.min',
         "webuploader"      : '_webuploader/webuploader.nolog.min',
@@ -69,14 +68,6 @@ requirejs.config({
         },
         "jqtoastr": {
             deps: ["jquery", "css!jquery.toastr/toastr.min"]
-        },
-        "pnotify": {
-            deps: ['css!_pnotify/pnotify.min'],
-            exports: 'pnotify'
-        },
-        "bootstrapvalidator": {
-            deps: ['css!_bootstrapvalidator/bootstrapValidator.min'],
-            exports: 'bootstrapValidator'
         },
         "bootstrap-dialog": {
             deps: ['css!_bootstrap3.dialog/bootstrap-dialog.min']
