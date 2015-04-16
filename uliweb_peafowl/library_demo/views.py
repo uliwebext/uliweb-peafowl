@@ -375,6 +375,11 @@ class LibraryDemoView(object):
                     'yy-mm-dd'}}}
         f['layout']['fields']['select1'] = {'widget':'select2'}
         f['layout']['fields']['select2'] = {'widget':'select2'}
+        f['layout']['fields']['file'] = {'widget':'filestyle', 'attrs':{
+            'options':{'buttonText':'', 'buttonName':'btn-primary'}}}
+        f['layout']['fields']['image'] = {'widget':'filestyle', 'attrs':{
+            'options':{'buttonText':'', 'buttonName':'btn-success       ',
+                       'iconName':'glyphicon-picture'}}}
         form_cls = make_form(**f)
 
         data = self._make_data()

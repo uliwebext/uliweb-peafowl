@@ -187,6 +187,13 @@ var widgets_mapping = {
             $.extend(true, opts, options || {});
             $(el).datetimepicker(opts);
         });
+    },
+    filestyle: function(el, options){
+        require(['bootstrap-filestyle'], function(filestyle){
+            var opts = {};
+            $.extend(true, opts, options || {});
+            $(el).filestyle(opts);
+        });
     }
 }
 

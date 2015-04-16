@@ -85,6 +85,9 @@ requirejs.config({
             ],
             exports: 'jQuery.fn.datetimepicker'
         },
+        "bootstrap-filestyle":{
+            exports: 'jQuery.fn.filestyle'
+        }
 
     },
     urlArgs: get_static_version()
