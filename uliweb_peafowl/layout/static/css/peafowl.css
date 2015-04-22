@@ -219,3 +219,20 @@ input[type="file"].form-control {border:none;background-color:transparent;line-h
 #peafowl-body .toast-bottom-full-width {
   margin-bottom: 20px;
 }
+
+
+.nav-header {height:30px;background-color: #2F4E5F; border-bottom:1px solid #61AFDB;margin:0px;font-size:14px;}
+.main-sidebar, .left-side {top:40px;}
+.nav-header .navigation-menu {list-style: none; padding:0px 20px;
+        background-color: transparent;position: absolute;top:0px;}
+.nav-header .navigation-menu li {float:left;}
+.nav-header .navigation-menu i{display:none;}
+.nav-header .navigation-menu>li>a {border:0px; padding:4px 15px;background-color:transparent;color:#ddd;display:block;}
+.nav-header .navigation-menu>li:hover>a {color:#fff;text-decoration: underline;}
+.nav-header .navigation-menu>li.active>a {color:#fff; background-color: rgb(64, 99, 118)}
+
+.navbar-smallnav {list-style: none;margin-right:20px;}
+.navbar-smallnav li {float:left;padding:15px 0px; }
+.navbar-smallnav li a{color:#eee;border-right:1px solid #aaa;padding:0px 10px;}
+.navbar-smallnav li a:hover{text-decoration: underline;}
+.navbar-smallnav li.last a{border-right:0px;}
