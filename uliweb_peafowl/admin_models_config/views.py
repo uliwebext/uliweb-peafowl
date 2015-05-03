@@ -67,10 +67,10 @@ class AdminModelsConfigView(object):
                   'basemodel', 'has_extension', 'extension_model']
 
         def post_created_form(fcls, model):
-            from uliweb_peafowl.layout.form_helper import Bootstrap3Layout
+            from uliweb_peafowl.layout.form_helper import Bootstrap3VLayout
             from uliweb.form.widgets import Button
 
-            fcls.layout_class = Bootstrap3Layout
+            fcls.layout_class = Bootstrap3VLayout
             fcls.form_buttons = [
                 str(Button(value=_('Save'), _class="btn btn-primary btn-sm",
                     name="submit", type="submit")),
