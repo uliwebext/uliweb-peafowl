@@ -550,7 +550,7 @@ class Bootstrap3VLayout(Layout):
         fieldset = None
         title = None
         table = None
-        table_class = self.layout.get('table_class', 'table table-bordered table-hover table-layout')
+        table_class = self.layout.get('table_class', 'table table-hover table-layout')
         for line in self.layout['rows']:
             if isinstance(line, (str, unicode)):
                 #process fieldset title
