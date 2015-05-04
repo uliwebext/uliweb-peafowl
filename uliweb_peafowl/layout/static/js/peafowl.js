@@ -332,8 +332,12 @@ function form_widgets(target, options){
             if (table_cell) cls = ' table-field-content';
             if (field.value) static_value = '<i class="glyphicon glyphicon-ok"></i>';
             else static_value = '<i class="glyphicon glyphicon-remove"></i>';
-            return '<div class="form-control-static' + cls + '">' +
-                this.field_to_static(field, static_value) + '</div>';
+            if (inline)
+                return '<div class="form-control-static' + cls + '">' +
+                    this.field_to_static(field, static_value) + ' ' + field.label + '</div>';
+            else
+                return '<div class="form-control-static' + cls + '">' +
+                    this.field_to_static(field, static_value) + '</div>';
         }
     }
     function file_convert(field, attrs, readonly, table_cell){
