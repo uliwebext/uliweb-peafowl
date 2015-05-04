@@ -328,7 +328,6 @@ class LibraryDemoView(object):
                 ],
                 'buttons':[u'<button type="submit" class="btn btn-primary">提交</button>',
                            '<a href="#">忘记密码</a>'],
-                'error':False,
             },
             'rules':{
                 'username':{
@@ -373,13 +372,13 @@ class LibraryDemoView(object):
         f['layout']['fields']['date'] = {'attrs':{'options':{
                 'dateFormat':
                     'yy-mm-dd'}}}
-        f['layout']['fields']['select1'] = {'widget':'select2'}
-        f['layout']['fields']['select2'] = {'widget':'select2'}
-        f['layout']['fields']['file'] = {'widget':'filestyle', 'attrs':{
-            'options':{'buttonText':'', 'buttonName':'btn-primary'}}}
-        f['layout']['fields']['image'] = {'widget':'filestyle', 'attrs':{
-            'options':{'buttonText':'', 'buttonName':'btn-success       ',
-                       'iconName':'glyphicon-picture'}}}
+        # f['layout']['fields']['select1'] = {'widget':'select2'}
+        # f['layout']['fields']['select2'] = {'widget':'select2'}
+        # f['layout']['fields']['file'] = {'widget':'filestyle', 'attrs':{
+        #     'options':{'buttonText':'', 'buttonName':'btn-primary'}}}
+        # f['layout']['fields']['image'] = {'widget':'filestyle', 'attrs':{
+        #     'options':{'buttonText':'', 'buttonName':'btn-success       ',
+        #                'iconName':'glyphicon-picture'}}}
         form_cls = make_form(**f)
 
         data = self._make_data()
@@ -387,3 +386,106 @@ class LibraryDemoView(object):
 
         response.template = 'LibraryDemoView/bs3form_widgets.html'
         return self._run_form(form, 'form_tlayout_widgets', 'Form Widgets')
+
+
+    def _make_js_form_data(self):
+        return {
+            'attrs': {'id':'test_form', 'method':'GET'},
+            'fields':[
+                {'name':'username', 'type':'str', 'label':'用户名',
+                    'placeholder':'用户名', 'help_string':'请输入用户名，长度不少于6个字符'},
+                {'name':'password', 'type':'password', 'label':'密码', 'placeholder':'密码'},
+                {'name':'remember_me', 'type':'bool', 'label':'记住我'},
+                {'name':'hidden', 'type':'hidden'},
+                {'name':'file', 'type':'file', 'label':'文件'},
+                {'name':'text', 'type':'text', 'label':'内容'},
+                {'name':'select', 'type':'select', 'label':'多选',
+                    'choices':[('0', '中文'), ('1', '英文')], 'multiple':True},
+                {'name':'static', 'type':'str', 'label':'静态字段', 'static':True},
+                {'name':'date', 'type':'date', 'label':'日期'},
+                {'name':'datetime', 'type':'datetime', 'label':'日期时间'},
+                {'name':'radios1', 'type':'radios', 'label':'单选',
+                    'choices':[('0', '中文'), ('1', '英文')]},
+                {'name':'radios2', 'type':'radios', 'label':'行内单选',
+                    'choices':[('0', '中文'), ('1', '英文')], 'inline':True},
+
+                {'name':'checkboxes1', 'type':'checkboxes', 'label':'多选',
+                    'choices':[('0', '中文'), ('1', '英文')]},
+                {'name':'checkboxes2', 'type':'checkboxes', 'label':'行内多选',
+                    'choices':[('0', '中文'), ('1', '英文')], 'inline':True},
+            ],
+            'layout_type':'bs3t',
+            'layout':{
+                'label_width':3,
+                'button_offset': '155px',
+                'fields':[
+                    {'name':'remember_me', 'inline':True, 'hide_label':True}
+                ],
+                'rows':[
+                    '-- Basic --',
+                    ['username', 'password'],
+                    ['remember_me', 'file'],
+                    '-- Extend --',
+                    'text',
+                    ['select', 'static'],
+                    ['date', 'datetime'],
+                    ['radios1', 'radios2'],
+                    ['checkboxes1', 'checkboxes2']
+                ],
+                'buttons':[
+                    {
+                        'id':'btnSubmit',
+                        'type':'submit',
+                        'class':'btn btn-primary btn-sm',
+                        'text':'提交'
+                    },
+                    ' <a href="#">忘记密码</a>'
+                ]
+            },
+            'rules':{
+                'username':{
+                    'required':True,
+                    'minlength':6,
+                },
+                'password':{
+                    'required':True,
+                }
+            },
+            'data': {
+                #username: 'hello',
+                'password': 'password',
+                'remember_me': True,
+                'hidden': 'hidden',
+                'file': 'file.csv',
+                'text': '<h1>This is Header</h1><p>Content</p>',
+                'select': ['0', '1'],
+                'static': '这是静态字段',
+                'radios1': '0',
+                'radios2': '1',
+                'checkboxes1': ['0', '1'],
+                'checkboxes2': ['0', '1'],
+                'date': '2015-04-15',
+                'datetime': '2015-04-15 12:12:12'
+            }
+        }
+
+    def bs3jsform(self):
+        result = {
+            'menu_id':'form_js',
+            'desc':'js form builder',
+            'success':None,
+            'form': self._make_js_form_data()
+        }
+        return result
+
+    def bs3jsform_readonly(self):
+        f = self._make_js_form_data()
+        f['readonly'] = True
+
+        result = {
+            'menu_id':'form_js_readonly',
+            'desc':'js form builder',
+            'success':None,
+            'form': f
+        }
+        return result
