@@ -82,8 +82,9 @@ def iter_menu(name, active='', validators=None):
          
     for m in p(items, active):
         yield m
+
   
-def default_admin_menu(name, active='', validators=None, id=None, _class=None):
+def _default_admin_menu(name, active='', validators=None, id=None, _class=None, menu_default_class=''):
     """
     :param menu: menu item name
     :param active: something like "x/y/z"
@@ -128,7 +129,7 @@ def default_admin_menu(name, active='', validators=None, id=None, _class=None):
             if index == 0:
                 _id = (' id="%s"' % id) if id else ''
                 _cls = (' %s' % _class) if _class else ''
-                s.append('<ul class="sidebar-menu plugs-menu%s"%s>\n' % (_cls, _id))
+                s.append('<ul class="%s plugs-menu%s"%s>\n' % (menu_default_class, _cls, _id))
             else:
                 s.extend(['\n', indent, '<ul class="treeview-menu">\n'])
         else:
@@ -136,3 +137,10 @@ def default_admin_menu(name, active='', validators=None, id=None, _class=None):
     
     return ''.join(s)
     
+def default_admin_menu(name, active='', validators=None, id=None, _class=None):
+    return _default_admin_menu(name, active=active, 
+        validators=validators, id=id, _class=_class, menu_default_class='sidebar-menu')
+
+def default_admin_navigation(name, active='', validators=None, id=None, _class=None):
+    return _default_admin_menu(name, active=active, 
+        validators=validators, id=id, _class=_class, menu_default_class='navigation-menu')
