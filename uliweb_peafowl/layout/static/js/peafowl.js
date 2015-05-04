@@ -640,7 +640,7 @@ function form_widgets(target, options){
             for(var i=0, _len=this.rows.length; i<_len; i++){
                 row = this.rows[i];
                 if (!$.isArray(row)){
-                    if (row.startsWith('-- ') && row.endsWith(' --')){
+                    if (row.substr(0,3) == '-- ' && row.substr(row.length-3, 3) == ' --'){
                         fields_set = true;
                         title = row.substring(3, row.length-3).trim();
                         if (first) {
