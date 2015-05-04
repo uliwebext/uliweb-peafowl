@@ -458,7 +458,8 @@ function form_widgets(target, options){
             rules: {},
             messages: {},
             data: {},
-            js_form: true
+            js_form: true,
+            buttons_class: 'form-actions'
         },
         this.options = $.extend(true, {}, this.defaults, options),
         this.buf = [],
@@ -510,7 +511,8 @@ function form_widgets(target, options){
                 this.buf.push('<div class="form-group">');
                 if (this.options.layout.button_offset) {
                     btn_offset = this.options.layout.button_offset;
-                    this.buf.push('<div style="margin-left:' + btn_offset + '">');
+                    this.buf.push('<div class="' + this.options.buttons_class +
+                        '" style="padding-left:' + btn_offset + '">');
                 }
                 for(var i=0, _len=buttons.length; i<_len; i++) {
                     b = buttons[i];
