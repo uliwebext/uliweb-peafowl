@@ -10,17 +10,27 @@ class Dashboard(object):
     def __init__(self, digital_name, content_name, entity=None):
         self.panel = functions.get_model('dashboardpanel')
         self.layout = functions.get_model('dashboardpanellayout')
+        self.tables = functions.get_model('tables')
         self.digital_name = digital_name
         self.content_name = content_name
-        if isinstance(entity, (tuple, list)) or isinstance(entity, orm.Model):
+        self.entity = None
+        self.dashboard_type = None
+        if isinstance(entity, (tuple, list)) and len(entity) == 2:
             self.entity = entity
-        else:
-            self.entity = None
+            self.dashboard_type = self.talbes.get_talbe(entity[0]).id
+        elif isinstance(entity, orm.Model):
+            self.entity = entity
+            self.dashboard_type = self.table.get_table(entity.__class__.tablename).id
+
 
     def _get_panels(self, dashboardname):
         res = self.layout.filter(self.layout.c.dashboard_name == dashboardname)
         if self.entity:
-            return res.filter(self.entity)
+            panels = res.filter(self.entity)
+            if panels.count():
+                return panels
+            else:
+                return res.filter(self.layout.c.type_id == self.dashboard_type)
         return res
 
 

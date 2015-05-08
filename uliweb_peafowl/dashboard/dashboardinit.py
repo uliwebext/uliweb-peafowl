@@ -3,16 +3,8 @@ from uliweb.orm import set_dispatch_send
 
 set_dispatch_send(False)
 
-dashboard = functions.get_model('dashboard')
-panel = functions.get_model('panel')
-panellayout = functions.get_model('panellayout')
-
-
-def process_dashboard():
-    d = settings.get('DASHBOARD', {})
-    for name, layout in d.items():
-        data = {'name': name, 'layout': layout}
-        dashboard(**data).save()
+panel = functions.get_model('dashboardpanel')
+layout = functions.get_model('dashboardpanellayout')
 
 
 def process_panel():
@@ -20,7 +12,11 @@ def process_panel():
     for data in p.items():
         panel(**data).save()
 
+def process_layout():
+    l = settings.get('PANELLAYOUT', {})
+    for data in l.items():
+        layout(**data).save()
 
 if __name__ == '__main__':
-    process_dashboard()
     process_panel()
+    process_layout()
