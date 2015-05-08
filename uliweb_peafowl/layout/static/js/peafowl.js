@@ -606,6 +606,7 @@ function form_widgets(target, options){
         },
         /* convert field to label */
         field_to_label: function(field, readonly, table_cell){
+            if(!!field.hide_label_grid) { return ''}
             var attrs = {}, buf=[];
             if (table_cell) attrs.class = 'table-field-label';
             attrs['for'] = field.id
