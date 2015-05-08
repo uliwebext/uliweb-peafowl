@@ -135,7 +135,7 @@ function validate_submit(target, options) {
 
     var opts = $.extend(true, {}, default_options, options);
 
-    require(['jqvalidation'], function(){
+    require(['_jquery.validation/localization/messages_zh.min'], function(){
         var form = $(target);
         var validator = form.validate({
             errorElement : 'span',
@@ -715,11 +715,17 @@ function form_widgets(target, options){
                         buf.push(content);
                         buf.push('</div>');
                     }
+                    buf.push('</div>')
                 }
             }
             this.buf.push(buf.join(''));
         },
         _process_column: function(col, cols_num, use_table){
+
+            if (col == "<empty>") {
+                return [12/cols_num, ""];
+            }
+
             var field = this.fields[col];
             if (!field) throw 'Field ' + col + ' if not found';
             var col_w = field.colspan || 1;
@@ -737,14 +743,15 @@ function form_widgets(target, options){
             } else {
                 div_attrs['class'] = this.options.layout.column_class;
                 div_attrs['id'] = 'div_' + field.id;
-                buf.append('<div '  + to_attrs(div_attrs) + '>');
-                buf.append(this.field_to_label(field, this.options.readonly, use_table));
-                buf.append(this.field_to_html(field, this.options.readonly, use_table));
-                buf.append(this.field_to_help_string(field));
-                buf.append('</div>');
+                buf.push('<div '  + to_attrs(div_attrs) + '>');
+                buf.push(this.field_to_label(field, this.options.readonly, use_table));
+                buf.push(this.field_to_html(field, this.options.readonly, use_table));
+                buf.push(this.field_to_help_string(field));
+                buf.push('</div>');
                 return [col_width, buf.join('')];
             }
         }
+        
     }
     $.fn.formb = function(options) {
         var builder = new FormBuilder(this, options);
