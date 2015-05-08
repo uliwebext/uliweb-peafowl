@@ -1,3 +1,10 @@
+{{block navheader}}
+<header class="nav-header">
+    {{block navheader-menu}}
+    {{end}}
+</header>
+{{end}}
+
 <header class="main-header">
     {{block sidebar_logo}}
     <a href="/" class="logo">Logo</a>
@@ -14,38 +21,43 @@
         </a>
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-                {{if request.user:}}
-                <li class="dropdown user user-menu">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <i class="glyphicon glyphicon-user"></i>
-                        <span>{{=unicode(request.user)}} <i class="caret"></i> </span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <!-- User image -->
-                        <li class="user-header bg-light-blue">
-                            {{block avatar}}
-                            <img src="{{=url_for_static('img/user90x90.png')}}" class="img-circle" alt="avatar"/>
-                            {{end}}
-                            <p>
-                                {{block user_info}}
-                                <span>{{=unicode(request.user)}}</span>
-                                <small>{{=request.user.email}}</small>
+                {{block topbar_user}}
+                    {{if request.user:}}
+                    <li class="dropdown user user-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="glyphicon glyphicon-user"></i>
+                            <span>{{=unicode(request.user)}} <i class="caret"></i> </span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <!-- User image -->
+                            <li class="user-header bg-light-blue">
+                                {{block avatar}}
+                                <img src="{{=url_for_static('img/user90x90.png')}}" class="img-circle" alt="avatar"/>
                                 {{end}}
-                            </p>
-                        </li>
-                        <!-- Menu Footer-->
-                        <li class="user-footer">
-                            <div class="pull-left">
-                                <a href="#" class="btn btn-default btn-flat">{{=_("Profile")}}</a>
-                            </div>
-                            <div class="pull-right">
-                                <a href="/admin/logout" class="btn btn-default btn-flat">{{=_("Logout")}}</a>
-                            </div>
-                        </li>
-                    </ul>
-                </li>
-                {{pass}}
+                                <p>
+                                    {{block user_info}}
+                                    <span>{{=unicode(request.user)}}</span>
+                                    <small>{{=request.user.email}}</small>
+                                    {{end}}
+                                </p>
+                            </li>
+                            <!-- Menu Footer-->
+                            <li class="user-footer">
+                                <div class="pull-left">
+                                    <a href="#" class="btn btn-default btn-flat">{{=_("Profile")}}</a>
+                                </div>
+                                <div class="pull-right">
+                                    <a href="/admin/logout" class="btn btn-default btn-flat">{{=_("Logout")}}</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    {{pass}}
+                {{end}}
             </ul>
         </div>
+        {{block topbar_smallnav}}
+        {{end}}
+       
     </nav>
 </header>

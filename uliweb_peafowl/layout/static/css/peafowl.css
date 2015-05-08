@@ -131,7 +131,7 @@
 .table-bordered > tfoot > tr > td {
   border: 1px solid #ccc;
 }
-.table-field-label {min-width: 100px;display: table-cell;text-align: right;margin-right: 10px;
+.table-field-label {min-width: 150px;display: table-cell;text-align: right;margin-right: 10px;
     vertical-align:top;
     font-weight:bold;margin-bottom:0;padding-right:10px;}
 .table-layout .form-control-static  {display:inline-block;vertical-align:top;padding-top:0;padding-bottom:0;}
@@ -143,7 +143,7 @@ input[type="checkbox"].checkbox-inline {height: 34px;}
 .table-layout .checkbox input[type=checkbox],
     .table-layout .checkbox-inline input[type=checkbox],
     .table-layout .radio input[type=radio],
-    .table-layout .radio-inline input[type=radio] {position:initial;}
+    .table-layout .radio-inline input[type=radio] {position:initial;margin-right:5px;}
 .table-field-col .radio, .table-field-col .checkbox {margin-top:0;margin-bottom:0;}
 input[type="file"].form-control {border:none;background-color:transparent;line-height:1;padding:8px 1px; }
 .input-group-btn button{height:34px;}
@@ -219,3 +219,22 @@ input[type="file"].form-control {border:none;background-color:transparent;line-h
 #peafowl-body .toast-bottom-full-width {
   margin-bottom: 20px;
 }
+
+/* fix jquery-ui css */
+.input-group .form-control {z-index:1;}
+
+.nav-header {height:30px;background-color: #2F4E5F; border-bottom:1px solid #61AFDB;margin:0px;font-size:14px;}
+.main-sidebar, .left-side {top:40px;}
+.nav-header .navigation-menu {list-style: none; padding:0px 20px;
+        background-color: transparent;position: absolute;top:0px;}
+.nav-header .navigation-menu li {float:left;}
+.nav-header .navigation-menu i{display:none;}
+.nav-header .navigation-menu>li>a {border:0px; padding:4px 15px;background-color:transparent;color:#ddd;display:block;}
+.nav-header .navigation-menu>li:hover>a {color:#fff;text-decoration: underline;}
+.nav-header .navigation-menu>li.active>a {color:#fff; background-color: rgb(64, 99, 118)}
+
+.navbar-smallnav {list-style: none;margin-right:20px;}
+.navbar-smallnav li {float:left;padding:15px 0px; }
+.navbar-smallnav li a{color:#eee;border-right:1px solid #aaa;padding:0px 10px;}
+.navbar-smallnav li a:hover{text-decoration: underline;}
+.navbar-smallnav li.last a{border-right:0px;}
