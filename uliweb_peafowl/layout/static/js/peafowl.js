@@ -508,11 +508,10 @@ function form_widgets(target, options){
 
             if (this.options.layout.buttons) {
                 buttons = this.options.layout.buttons;
-                this.buf.push('<div class="form-group">');
+                this.buf.push('<div class="form-group '+this.options.buttons_class+'">');
                 if (this.options.layout.button_offset) {
                     btn_offset = this.options.layout.button_offset;
-                    this.buf.push('<div class="' + this.options.buttons_class +
-                        '" style="padding-left:' + btn_offset + '">');
+                    this.buf.push('<div style="padding-left:' + btn_offset + '">');
                 }
                 for(var i=0, _len=buttons.length; i<_len; i++) {
                     b = buttons[i];
@@ -521,9 +520,9 @@ function form_widgets(target, options){
                         btn = $.extend({}, b);
                         text = btn.text;
                         delete btn.text;
-                        this.buf.push('<button '+to_attrs(b)+'>'+text+'</button>');
+                        this.buf.push('<button '+to_attrs(b)+'>'+text+'</button>\n');
                     } else {
-                        this.buf.push(b);
+                        this.buf.push(b+"\n");
                     }
                 }
                 if (this.options.layout.button_offset)

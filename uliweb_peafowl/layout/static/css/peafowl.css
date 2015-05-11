@@ -147,7 +147,6 @@ input[type="checkbox"].checkbox-inline {height: 34px;}
 .table-field-col .radio, .table-field-col .checkbox {margin-top:0;margin-bottom:0;}
 input[type="file"].form-control {border:none;background-color:transparent;line-height:1;padding:8px 1px; }
 .input-group-btn button{height:34px;}
-.form-actions .btn {margin-right:4px;}
 
 /* webui popover fix */
 .webui-popover-content .form-group {margin-left:0;margin-right:0;}
