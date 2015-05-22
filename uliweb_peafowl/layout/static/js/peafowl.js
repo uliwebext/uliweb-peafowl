@@ -353,6 +353,7 @@ function form_widgets(target, options){
         }
     }
     function select_convert(field, attrs, readonly, table_cell){
+        var cls = '';
         var buf=[], multiple=field.multiple ? ' multiple="multiple"' : '',
             choice, checked;
 
@@ -483,7 +484,8 @@ function form_widgets(target, options){
             if(!this.options.readonly && !$.isEmptyObject(this.options.rules)){
                 validate_submit(form, {
                     rules: this.options.rules,
-                    messages: this.options.messages
+                    messages: this.options.messages,
+                    ajax_submit: this.options.ajax_submit
                 });
             }
             if (this.options.js_form)
