@@ -102,3 +102,15 @@
 .mmg-notation.info{
     border-color: #3a87ad #3a87ad transparent transparent;
 }
+
+.mmGrid .row-detail-pane {
+    display:none;
+}
+
+.mmGrid .row-detail-pane.showing {
+    display:table-row;
+}
+
+.mmGrid .row-detail-pane.showing.ui-helper-hidden {
+    display:none;
+}

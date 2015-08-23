@@ -1,0 +1,129 @@
+{{extend "admin_layout.html"}}
+
+
+{{block sidemenu}}
+    {{<< functions.menu('ADMIN', 'library_demo/mmgrid')}}
+{{end}}
+
+{{block sidebar_page_title}}
+    {{=_('DataGrid')}}
+{{end}}
+
+{{block sidebar_page_subtitle}}
+{{end}}
+
+{{block custom_css}}
+{{end}}
+
+{{block sidebar_breadcrumb}}
+<ol class="breadcrumb">
+    <li><a href="/"><i class="fa fa-dashboard"></i>{{=_('Home')}}</a></li>
+    <li><a href="{{=ADMIN_URL}}">{{=_('Admin')}}</a></li>
+    <li class="active">{{=_('MMGrid')}}</li>
+</ol>
+{{end}}
+
+{{block main_content}}
+<div class="box box-warning">
+    <div class="box-header">
+        <h3 class="box-title">DataGrid examples</h3>
+    </div>
+    <div class="box-body">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div id="mmg"></div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        var handler = function(value, item) {
+            var id = item.id;
+            return "<button class='detailBtn btn btn-primary btn-xs' rowid='"+id+"'> 明细 </button>"
+        }
+
+        var detailRenderer = function(item) {
+            var html = []
+
+            html.push("<h5>")
+            html.push(item.name)
+            html.push("</h5>")
+
+            html.push("<ul>")
+            html.push("<li>Begin Date: "+item.begin_date+" </li>")
+            html.push("<li>End Date: "+item.end_date+" </li>")
+            html.push("<li>Begin Date: "+item.begin_date+" </li>")
+            html.push("<li>End Date: "+item.end_date+" </li>")
+            html.push("<li>Begin Date: "+item.begin_date+" </li>")
+            html.push("<li>End Date: "+item.end_date+" </li>")
+            html.push("</ul>")
+
+            return html.join("")
+        }
+        var cols = [
+            //{title:'ID', name:'id', width: 30, align: 'center', lockWidth:true },
+            {title:'Title', name:'name' ,width:200, lockDisplay: true },
+            {title:'Begin Date', name:'begin_date' ,width:100 },
+            {title:'End Date', name:'end_date' ,width:100 },
+            {title:'Pretend Task', name:'pre_task' ,width:100 },
+            {title:'Action', name:'action' ,width:100, renderer: handler }
+        ];    
+
+
+        var items = [
+            {name:'Requirement', 
+                'begin_date':'2013-1-5', 'end_date':'2013-2-1', 'pre_task':'', type:'2', id:1}, 
+            {name:'Analysis', 
+                'begin_date':'2013-1-5', 'end_date':'2013-2-1', 'pre_task':'', type:'2', _parent:1, id:2},
+            {name:'Review', 
+                'begin_date':'2013-1-5', 'end_date':'2013-2-1', 'pre_task':'', type:'1', _parent:1, id:3},
+            {name:'Development', 
+                'begin_date':'2013-1-5', 'end_date':'2013-2-1', 'pre_task':'', type:'2', id:4},
+            {name:'Summary', 
+                'begin_date':'2013-1-5', 'end_date':'2013-2-1', 'pre_task':'', type:'2', _parent:4, id:5},
+            {name:'Detail', 
+                'begin_date':'2013-1-5', 'end_date':'2013-2-1', 'pre_task':'', type:'2', _parent:4, id:6},
+            {name:'Develop', 
+                'begin_date':'2013-1-5', 'end_date':'2013-2-1', 'pre_task':'', type:'2', _parent:4, id:7},
+            {name:'Coding', 
+                'begin_date':'2013-1-5', 'end_date':'2013-2-1', 'pre_task':'', type:'2', _parent:7, id:8},
+            {name:'Unit Test', 
+                'begin_date':'2013-1-5', 'end_date':'2013-2-1', 'pre_task':'', type:'2', _parent:7, id:9},
+        ];
+
+        require(["mmtreegrid"], function(mmgrid){
+            $("#mmg").mmGrid({
+                cols: cols,
+                items: items,
+                nowrap: true,
+                fitColWidth: true,
+                treeColumn: 'name',
+                idField: 'id',
+                detailPane: true,
+                height: "auto",
+                detailRenderer: detailRenderer
+            });
+
+            $("#mmg").delegate(".detailBtn", "click", function(){
+                var id = $(this).attr("rowid");
+                var node = $("#mmg").mmGrid("findItem", id)
+                $("#mmg").mmGrid("toggleDetailPane", node);
+            })
+        });
+
+        require(["jqtoastr"], function(toastr) {
+            $("#showmessage").click(function() {
+                var msg = $('#message').val() || "Wrapped show_message function for peafowl."
+                show_message(msg)
+            })
+        });
+
+    })
+</script>
+  
+{{end}}

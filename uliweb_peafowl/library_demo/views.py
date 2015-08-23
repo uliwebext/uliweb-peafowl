@@ -15,6 +15,9 @@ class LibraryDemoView(object):
     def webui_popover(self):
         return {}
 
+    def mmgrid(self):
+        return {}
+
     def webui_popover_dialog(self):
         import uliweb.form as form
         class MyForm(form.Form):

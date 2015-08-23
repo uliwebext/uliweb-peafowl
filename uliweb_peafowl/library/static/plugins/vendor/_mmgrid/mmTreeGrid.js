@@ -36,7 +36,11 @@
             expandMethod: 'GET',//自动展开子结点ajax请求方式
             expandParam: 'id',  //自动展开子结点ajax请求参数名
             expandFilter: null, //自动展开数据预处理
-            expandURL: null     //自动展开子结点URL 
+            expandURL: null,    //自动展开子结点URL 
+
+            detailPane: false,
+            detailRenderer: null,
+            detailField: "detailinfo"
             
             
         },
@@ -78,6 +82,8 @@
                 var $tbody = this.$body.find('tbody');
                 var nodes = [];
                 var pos;
+
+                var hasDetail = this.opts.detailPane;
                 
                 position = position || 'after';
                 
@@ -107,7 +113,11 @@
                 $tr = $(this._rowHtml(item));
                 $tr.attr('level', 0);
                 $tr.data('item', item);
-                
+
+                if(this.opts.detailPane) {
+                    $tr_detail = $(this._detailRowHtml(item))
+                }
+
                 //无数据直接追加
                 if(this.count() == 0){
                     e = this._trigger(this.$body, 'add', item);
@@ -181,11 +191,20 @@
                             }
                             else
                                 $tbody.append($tr);
+                        } else {
+                            if(hasDetail) {
+                                parent.next().after($($tr));
+                            } else {
+                                parent.after($($tr));    
+                            }
                         }
-                        else parent.after($($tr));
+                    } else {
+                        if(hasDetail) {
+                            parent.next().after($($tr));
+                        } else {
+                            parent.after($($tr));    
+                        }
                     }
-                    else
-                        parent.after($($tr));
                     
                     this._updateIndex();
                     this._trigger($tr, 'added', item);
@@ -214,6 +233,10 @@
                     this.updateStyle($tr, false);
                 
                 this._updateIndex();
+
+                if(this.opts.detailPane) {
+                    $tr.after($tr_detail)
+                }
                 return $tr
             }
             
@@ -300,7 +323,7 @@
                 var $tbody = this.$body.find('tbody');
                 
                 if($.isNumeric(index)){
-                    item = $tbody.find('tr').eq(index)
+                    item = $tbody.find('tr:not([rowinfo])').eq(index)
                     if(item.length == 0)
                         return ;
                     else
@@ -333,7 +356,7 @@
                 
                 //如果被中止，则取消删除
                 if (e.isDefaultPrevented()) return false;
-                
+
                 if(index == undefined){
                     nodes = $tbody.find('tr');
                 }else{
@@ -398,6 +421,9 @@
                 var item = this._get_item(index);
                 
                 if (item){
+                    if(item.next().attr("rowinfo")) {
+                        item.next().remove()
+                    }
                     item.remove();
                     this.$count --;
                 }
@@ -452,9 +478,37 @@
                         trHtml.push('</div>');
                         trHtml.push('</span></td>');
                     };
+
                     trHtml.push('</tr>');
                     return trHtml.join('');
                 }
+            }
+
+            , _detailRowHtml: function(item) {
+                var trHtml = [];
+                var opts = this.opts;
+                var leafCols = this._leafCols();
+
+                if (item[opts.idField])
+                    trHtml.push('<tr rowinfo="'+ opts.keyAttrName + '-' + item[opts.idField] + '"');
+                else
+                    trHtml.push('<tr');
+
+                trHtml.push(' class="row-detail-pane"');
+                trHtml.push('>');
+                trHtml.push('<td class="" colspan="'+(leafCols.length+1)+'">');
+
+                trHtml.push('<div class="mmg-detailCellWrapper">');
+                if(opts.detailRenderer) {
+                    trHtml.push(opts.detailRenderer(item))
+                } else {
+                    trHtml.push(item[opts.detailField])
+                }
+                trHtml.push('</div>');
+                trHtml.push('</td>');
+                trHtml.push('</tr>');
+
+                return trHtml.join('');
             }
             
             /*
@@ -579,6 +633,7 @@
                     return ;
                 
                 $self = this;
+                var hasDetail = this.opts.detailPane;
                 var data = this.row(node);
                 
                 if(node.hasClass('parent') && node.hasClass('expanded')){
@@ -601,9 +656,11 @@
                         }
                 
                         $(this).addClass('ui-helper-hidden');
-                
+                        if(hasDetail) {
+                            $(this).next().addClass('ui-helper-hidden');    
+                        }
                     });
-                    
+
                     this._trigger(node, 'collapsed', data);
                     
                 }
@@ -621,6 +678,7 @@
                     return ;
                     
                 var $self = this;
+                var hasDetail = this.opts.detailPane;
                 var data = this.row(node);
                 var children = this.getChildren(node);
                 
@@ -641,6 +699,9 @@
                             }
                     
                             $(this).removeClass('ui-helper-hidden');
+                            if(hasDetail) {
+                                $(this).next().removeClass('ui-helper-hidden');    
+                            }
                     
                         });
                     }
@@ -811,7 +872,7 @@
                 if(node)
                     return $(node).siblings("tr[" + this.opts.parentAttrName + '="' + this.getKey(node) + '"]');
                 else{
-                    return this.$body.find('tbody tr:not(['+this.opts.parentAttrName+'])');
+                    return this.$body.find('tbody tr:not(['+this.opts.parentAttrName+']):not([rowinfo])');
                 }
             }
             /*
@@ -830,11 +891,15 @@
                 //如果是同层，则取相同的parent和level的下一个结点
                 cur = $(node).next();
                 while (cur.length>0){
-                    if (cur.attr('level') <= level){
-                        break;
+                    if (cur.attr("rowinfo")) {
+                        cur = $(cur).next();
+                    } else {
+                        if (cur.attr('level') <= level){
+                            break;
+                        }
+                        nodes.push(cur);
+                        cur = $(cur).next();                        
                     }
-                    nodes.push(cur);
-                    cur = $(cur).next();
                 }
                 return nodes;
             }
@@ -878,15 +943,25 @@
                 //如果是同层，则取相同的parent和level的下一个结点
                 cur = $(node).next();
                 while (cur.length>0){
+                    if(cur.attr("rowinfo")) {
+                        cur = $(cur).next();
+                        continue;
+                    }
                     x = parseInt(cur.attr('level'));
                     if(level == x){
                         return cur;
-                    }else if (!samelevel){
-                        if (x < level){
-                            return cur;
+                    } else {
+                        if (x > level) {
+                            cur = $(cur).next();
+                        } else {
+                            if (x < level) {
+                                if(!samelevel) {
+                                    return cur;
+                                } else {
+                                    return ;
+                                }
+                            }
                         }
-
-                        cur = $(cur).next();
                     }
                 }
             }
@@ -904,6 +979,11 @@
                 //如果是同层，则取相同的parent和level的下一个结点
                 cur = $(node).next();
                 while (cur.length>0){
+                    if(cur.attr("rowinfo")) {
+                        cur = $(cur).next();
+                        continue;
+                    }
+
                     if(level == cur.attr('level')){
                         nodes.push(cur);
                     }else if (cur.attr('level') < level){
@@ -927,6 +1007,11 @@
                 //如果是同层，则取相同的parent和level的下一个结点
                 cur = $(node).prev();
                 while (cur.length>0){
+                    if(cur.attr("rowinfo")) {
+                        cur = $(cur).prev();
+                        continue;
+                    }
+
                     if(level == cur.attr('level')){
                         return cur;
                     }else if (cur.attr('level') < level){
@@ -946,6 +1031,11 @@
 
                 if(typeof args === 'number'){
                     var $tr = $body.find('tr').eq(args);
+
+                    if($tr.attr("rowinfo")) {
+                        return;
+                    }
+
                     if(!opts.multiSelect){
                         $body.find('tr.selected').removeClass('selected');
                         if(opts.checkCol){
@@ -971,9 +1061,16 @@
                         }
                     });
                 }else if(args === undefined || (typeof args === 'string' && args === 'all')){
-                    $body.find('tr.selected').removeClass('selected');
-                    $body.find('tr').addClass('selected');
-                    $body.find('tr > td').find('.mmg-check').prop('checked','checked');
+
+                    if(!opts.multiSelect){
+                        $body.find('tr.selected').removeClass('selected');
+                        $body.find('tr:not([rowinfo]):first').addClass('selected');
+                        $body.find('tr > td').find('.mmg-check:first').prop('checked','checked');
+                    } else {
+                        $body.find('tr.selected').removeClass('selected');
+                        $body.find('tr:not([rowinfo])').addClass('selected');
+                        $body.find('tr > td').find('.mmg-check').prop('checked','checked');
+                    }
                 }else{
                     return;
                 }
@@ -1119,7 +1216,15 @@
                     
                     function f(){
                         for(i=0; i<children.length; i++){
-                            n.before(children[i]);
+
+                            if($self.opts.detailPane) {
+                                var next = children[i].next()
+                                n.before(children[i])
+                                n.before(next)
+                            } else {
+                                n.before(children[i]);    
+                            }
+                            
                         }
                         $self.mergeData(para);
                         
@@ -1452,7 +1557,37 @@
                 
                 this.updateStyle(node, undefined, true);
             }
-            
+
+            , showDetailPane: function(node) {
+                var item = this._get_item(index);
+                item.next().addClass("showing")
+            }
+
+            , hideDetailPane: function(node) {
+                var item = this._get_item(index);
+                item.next().removeClass("showing")
+            }
+
+            , toggleDetailPane: function(index) {
+                var item = this._get_item(index);
+                if(item.next().hasClass("showing")) {
+                    item.next().removeClass("showing")
+                } else {
+                    item.next().addClass("showing")
+                }
+            }
+
+            , selectedRowsIndex: function(){
+                var $body = this.$body;
+                var $trs = this.$body.find('tr:not([rowinfo])')
+                var selected = [];
+                $.each($body.find('tr.selected'), function(index){
+                    selected.push($trs.index(this));
+                });
+                return selected;
+            }
+
+
         } // end of methods
         
         
