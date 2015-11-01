@@ -4,7 +4,7 @@ from uliweb import expose, functions
 @expose('/admin/menus')
 class AdminMenusView(object):
     def __begin__(self):
-        functions.require_login_admin()
+        functions.require_login()
 
     def __init__(self):
         self.menus_category = functions.get_model('admin_menus_category')

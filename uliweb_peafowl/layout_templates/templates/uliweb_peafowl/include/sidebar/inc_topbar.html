@@ -21,6 +21,8 @@
         </a>
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
+                {{block topbar_bubbles}}
+                {{end}}
                 {{block topbar_user}}
                     {{if request.user:}}
                     <li class="dropdown user user-menu">
@@ -32,7 +34,7 @@
                             <!-- User image -->
                             <li class="user-header bg-light-blue">
                                 {{block avatar}}
-                                <img src="{{=url_for_static('img/user90x90.png')}}" class="img-circle" alt="avatar"/>
+                                <img src="{{=url_for_static('uliweb_peafowl/img/user90x90.png')}}" class="img-circle" alt="avatar"/>
                                 {{end}}
                                 <p>
                                     {{block user_info}}
@@ -47,7 +49,7 @@
                                     <a href="#" class="btn btn-default btn-flat">{{=_("Profile")}}</a>
                                 </div>
                                 <div class="pull-right">
-                                    <a href="/admin/logout" class="btn btn-default btn-flat">{{=_("Logout")}}</a>
+                                    <a href="/logout" class="btn btn-default btn-flat">{{=_("Logout")}}</a>
                                 </div>
                             </li>
                         </ul>

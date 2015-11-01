@@ -1,4 +1,4 @@
-{{extend "theme/basic.html"}}
+{{extend "layout.html"}}
 
 {{block body_class}}bg-black{{end}}
 
@@ -7,15 +7,17 @@
 <div class="form-box" id="login-box">
     <div class="header">{{=settings.LAYOUT.ADMIN_TITLE}}</div>
     <form action="" method="post">
-        <div class="body bg-gray">
-            <div class="form-group {{if form.errors.get('username'):}}has-error{{pass}}">
+        <div class="body">
+            <div class="form-group {{if form.errors.get('username'):}}has-error{{pass}} has-feedback">
                 <input id="field_username" name="username" type="text" value="{{=form.username.data}}" class="form-control" placeholder="{{=form.username.field.label}}">
+                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                 <p class="help help-block">
                     {{if form.errors.get('username'):}}{{=form.errors['username']}}{{pass}}
                 </p>
             </div>
-            <div class="form-group {{if form.errors.get('password'):}}has-error{{pass}}">
+            <div class="form-group {{if form.errors.get('password'):}}has-error{{pass}} has-feedback">
                 <input type="password" name="password" class="form-control" placeholder="{{=form.password.field.label}}"/>
+                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                 <p class="help help-block">
                     {{if form.errors.get('password'):}}{{=form.errors['password']}}{{pass}}
                 </p>

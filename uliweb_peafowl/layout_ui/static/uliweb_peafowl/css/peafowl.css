@@ -37,10 +37,11 @@
 .form-box .footer > .form-group {
   margin-top: 20px;
 }
-.form-box .body > .form-group > input,
+/*.form-box .body > .form-group > input,
 .form-box .footer > .form-group > input {
   border: #fff;
 }
+*/
 .form-box .body > .btn,
 .form-box .footer > .btn {
   margin-bottom: 10px;
@@ -224,7 +225,7 @@ input[type="file"].form-control {border:none;background-color:transparent;line-h
 .input-group .form-control {z-index:1;}
 
 .nav-header {height:30px;background-color: #0E69F7; border-bottom:1px solid #61AFDB;margin:0px;font-size:14px;}
-.main-sidebar, .left-side {top:40px;}
+/*.main-sidebar, .left-side {top:40px;}*/
 .nav-header .navigation-menu {list-style: none; padding:0px 20px;
         background-color: transparent;position: absolute;top:0px;}
 .nav-header .navigation-menu li {float:left;}

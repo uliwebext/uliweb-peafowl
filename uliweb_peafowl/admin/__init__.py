@@ -6,26 +6,6 @@ def prepare_default_env(sender, env):
 
     env['ADMIN_URL'] = settings.ADMIN.ADMIN_URL
 
-def require_login_admin(f=None, next=None):
-    from uliweb.utils.common import wraps
-    
-    def _login(next=None):
-        from uliweb import request, Redirect, url_for
-        
-        if not request.user:
-            path = functions.request_url()
-            Redirect(next or url_for('admin_login', next=path))
-    
-    if not f:
-        _login(next=next)
-        return
-    
-    @wraps(f)
-    def _f(*args, **kwargs):
-        _login(next=next)
-        return f(*args, **kwargs)
-    return _f  
-
 def iter_menu(name, active='', validators=None):
 
     from plugs.menus import get_menu, _validate

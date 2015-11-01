@@ -1,4 +1,4 @@
-{{extend "theme/sidebar.html"}}
+{{extend "uliweb_peafowl/basic/sidebar.html"}}
 
 {{block navheader}}{{end}}
 
@@ -13,3 +13,7 @@
 {{block sidebar_page_subtitle}}{{end}}
 
 {{block sidebar_breadcrumb}}{{end}}
+
+{{block topbar_bubbles}}
+    {{include "uliweb_peafowl/widgets/inc_message_menu.html"}}
+{{end}}

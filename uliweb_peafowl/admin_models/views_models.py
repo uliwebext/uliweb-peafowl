@@ -4,7 +4,7 @@ from uliweb import expose, functions
 @expose('/admin/models')
 class AdminModelsView(object):
     def __begin__(self):
-        functions.require_login_admin()
+        functions.require_login()
 
     def __init__(self):
         from uliweb import settings

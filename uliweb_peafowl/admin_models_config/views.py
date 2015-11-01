@@ -6,7 +6,7 @@ import logging
 log = logging.getLogger(__name__)
 
 def __begin__():
-    functions.require_login_admin()
+    functions.require_login()
 
 @expose('/admin/models_config')
 class AdminModelsConfigView(object):
@@ -67,10 +67,9 @@ class AdminModelsConfigView(object):
                   'basemodel', 'has_extension', 'extension_model']
 
         def post_created_form(fcls, model):
-            from uliweb_peafowl.layout.form_helper import Bootstrap3Layout
             from uliweb.form.widgets import Button
 
-            fcls.layout_class = Bootstrap3Layout
+            fcls.layout_class = 'bs3t'
             fcls.form_buttons = [
                 str(Button(value=_('Save'), _class="btn btn-primary btn-sm",
                     name="submit", type="submit")),
