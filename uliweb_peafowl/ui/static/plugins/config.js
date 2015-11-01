@@ -17,7 +17,7 @@ function get_static_version() {
 requirejs.config({
     "baseUrl": "/static/plugins/vendor",
     "paths": {
-        "app"      : '../../js/modules',
+        //"app"      : '../../js/modules',
         "text"     : 'require/text',
         "css"      : 'require/css', 
         "markdown" : 'Markdown.Converter',
@@ -28,7 +28,7 @@ requirejs.config({
         "mmpaginator"      : '_mmgrid/mmPaginator',
         "mmtreegrid"       : '_mmgrid/mmTreeGrid',
         "select2"          : '_select2/select2',
-        "adminLTE"         : "app/adminLTE",
+        //"adminLTE"         : "app/adminLTE",
         "bootstrap-dialog" : '_bootstrap3.dialog/bootstrap-dialog.min',
         "popover"          : '_webui_popover/jquery.webui-popover.min',
         "webuploader"      : '_webuploader/webuploader.nolog.min',
